@@ -11,6 +11,13 @@
   var CHAO_JOGADOR = 0.80;   // altura dos pés do personagem
   var T_PULO = 0.78, PICO = 1.0, T_AGACHA = 0.7;
   var VIDAS = 3;
+  // ---- dificuldade (mexa aqui para deixar mais fácil ou mais difícil) ----
+  var VEL_INICIAL = 7;       // passos por segundo no começo da corrida
+  var VEL_MAXIMA = 15;       // teto da velocidade
+  var VEL_SOBE = 0.1;        // quanto a velocidade aumenta por segundo de jogo
+  var ENTRE_LINHAS_INICIO = 1.75;  // segundos entre um obstáculo e o próximo, no começo
+  var ENTRE_LINHAS_FIM = 1.1;      // ... e depois de 90 segundos de jogo
+  var INVULNERAVEL = 1.8;    // segundos sem perder vida depois de bater
   var TRACO = '#4a403b';
   var CHAVE_RECORDE = 'joguinhos.desviar.recorde';
 
@@ -280,7 +287,7 @@
       faixa: 1, xl: 1, pulo: -1, agacha: 0, invul: 0,
       vidas: VIDAS, pontos: 0, ultimoHud: -1,
       itens: [], estrelas: [], cenario: [], nuvens: nuvens,
-      proxima: 1.6 * 7, proxEstrela: 99, proxCenario: 0, ultimaLivre: [0, 1, 2],
+      proxima: 1.6 * VEL_INICIAL, proxEstrela: 99, proxCenario: 0, ultimaLivre: [0, 1, 2],
       fimEm: 0
     };
     for (var d = 2; d < D_MAX; d += rnd(2.5, 4)) criarCenario(d);
@@ -311,7 +318,7 @@
     }
     itens.forEach(function (i) { jogo.itens.push({ d: D_MAX, lane: i.lane, tipo: i.tipo, hit: false, passou: false }); });
     jogo.ultimaLivre = livres;
-    var tEntre = 1.75 - 0.65 * nivel;                       // segundos entre linhas: cai devagar
+    var tEntre = ENTRE_LINHAS_INICIO - (ENTRE_LINHAS_INICIO - ENTRE_LINHAS_FIM) * nivel;                       // segundos entre linhas: cai devagar
     var gap = Math.max(9, jogo.v * tEntre);
     jogo.proxima = gap;
     jogo.proxEstrela = gap * 0.5;
@@ -342,7 +349,7 @@
     j.t += dt;
     var vivo = estado.fase === 'jogando';
     if (vivo) {
-      var vBase = Math.min(15, 7 + j.t * 0.1);
+      var vBase = Math.min(VEL_MAXIMA, VEL_INICIAL + j.t * VEL_SOBE);
       j.lento = Math.max(0, j.lento - dt / 2.2);
       j.v = vBase * (1 - 0.35 * j.lento);
     } else {
@@ -367,7 +374,7 @@
           it.hit = true;
           j.vidas--;
           j.lento = 1;
-          j.invul = 1.8;
+          j.invul = INVULNERAVEL;
           Som.tocar('bate');
           pintarHud();
           if (j.vidas <= 0) terminar();
@@ -448,7 +455,7 @@
   function comecar(heroi) {
     estado.heroi = heroi;
     novoJogo();
-    jogo.v = 7;
+    jogo.v = VEL_INICIAL;
     estado.fase = 'jogando';
     $('dv-escolha').hidden = true;
     $('dv-fim').hidden = true;
