@@ -1,0 +1,123 @@
+/* Paleta calma, baixo contraste de brilho, sem animações bruscas */
+:root {
+  --fundo: #f4efe4;
+  --fundo-2: #ebe4d3;
+  --tinta: #5a4e48;
+  --cartao-colorir: #fbe3d6;
+  --cartao-desviar: #d9e9f2;
+  --borda: #6b5b53;
+  --botao: #fffaf0;
+  --botao-ativo: #efe6d2;
+  --alvo-min: 88px; /* tamanho mínimo de qualquer botão (dedinho de 5-6 anos) */
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--fundo);
+  color: var(--tinta);
+  font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+  overflow: hidden;
+  overscroll-behavior: none;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+#app { position: fixed; inset: 0; }
+
+.tela {
+  position: absolute;
+  inset: 0;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+  animation: aparecer 0.35s ease both;
+}
+.tela[hidden] { display: none !important; } /* senão "display:grid" do menu vence o atributo hidden */
+
+@keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
+
+button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+/* ---------- botões de canto (som, voltar) ---------- */
+.btn-canto {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 16px);
+  min-width: var(--alvo-min);
+  min-height: var(--alvo-min);
+  width: var(--alvo-min);
+  height: var(--alvo-min);
+  padding: 18px;
+  background: var(--botao);
+  border: 4px solid var(--borda);
+  border-radius: 28px;
+  display: grid;
+  place-items: center;
+  z-index: 5;
+}
+#btn-som { right: calc(env(safe-area-inset-right) + 16px); }
+.btn-voltar { left: calc(env(safe-area-inset-left) + 16px); }
+.btn-canto:active { background: var(--botao-ativo); transform: scale(0.97); }
+.ico { width: 100%; height: 100%; display: block; }
+
+/* estado do ícone de som */
+#btn-som[aria-pressed="false"] .som-mudo { display: none; }
+#btn-som[aria-pressed="true"] .som-ondas { display: none; }
+
+/* ---------- menu ---------- */
+#tela-menu {
+  background: radial-gradient(circle at 50% 40%, var(--fundo) 0%, var(--fundo-2) 100%);
+  display: grid;
+  place-items: center;
+}
+
+.menu-cartoes {
+  display: flex;
+  gap: clamp(20px, 5vmin, 56px);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0 clamp(16px, 4vmin, 48px);
+}
+
+.cartao {
+  flex: 0 1 min(38vw, 52vh);
+  aspect-ratio: 1 / 1.1;
+  max-width: 340px;
+  background: var(--cartao-colorir);
+  border: 5px solid var(--borda);
+  border-radius: 40px;
+  padding: 16px 12px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8px 0 rgba(107, 91, 83, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.cartao-desviar { background: var(--cartao-desviar); }
+.cartao:active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(107, 91, 83, 0.25); }
+.cartao-ico { width: 78%; flex: 1 1 auto; min-height: 0; }
+.cartao-nome { font-size: clamp(26px, 5.5vmin, 44px); font-weight: 700; letter-spacing: 0.02em; }
+
+/* retrato em celular: cartões empilhados */
+@media (orientation: portrait) {
+  /* o espaço de cima mantém os cartões longe do botão de som */
+  .menu-cartoes { flex-direction: column; padding-top: calc(var(--alvo-min) + 32px); }
+  .cartao { flex: 0 1 auto; width: min(70vw, 32vh); max-width: none; }
+}
+
+/* telas provisórias (substituídas nas próximas fases) */
+.provisorio { height: 100%; display: grid; place-items: center; font-size: 40px; }
+
+/* quem prefere menos movimento */
+@media (prefers-reduced-motion: reduce) {
+  .tela { animation: none; }
+  .cartao { transition: none; }
+}

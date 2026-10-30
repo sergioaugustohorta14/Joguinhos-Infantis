@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="theme-color" content="#f4efe4">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Joguinhos</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <main id="app">
+
+    <!-- MENU -->
+    <section id="tela-menu" class="tela" aria-label="Menu">
+      <button id="btn-som" class="btn-canto" type="button" aria-label="Som ligado" aria-pressed="false">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+          <path class="som-alto" d="M8 19h8l10-8v26l-10-8H8z" fill="currentColor"/>
+          <path class="som-ondas" d="M32 17c3 2 3 12 0 14M37 12c6 4 6 20 0 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+          <path class="som-mudo" d="M33 18l10 12M43 18L33 30" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </button>
+
+      <div class="menu-cartoes">
+        <button class="cartao cartao-colorir" type="button" data-ir="colorir" aria-label="Colorir">
+          <svg viewBox="0 0 120 120" class="cartao-ico" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="#fff6e0"/>
+            <path d="M34 84 L74 30 q6-8 14-2 q8 6 2 14 L50 96 L30 100 z" fill="#f2b8a2" stroke="#6b5b53" stroke-width="5" stroke-linejoin="round"/>
+            <path d="M74 30 l16 12" stroke="#6b5b53" stroke-width="5" stroke-linecap="round"/>
+            <path d="M34 84 l16 12" stroke="#6b5b53" stroke-width="5" stroke-linecap="round"/>
+            <circle cx="28" cy="102" r="6" fill="#9ccfb4" stroke="#6b5b53" stroke-width="4"/>
+          </svg>
+          <span class="cartao-nome">Colorir</span>
+        </button>
+
+        <button class="cartao cartao-desviar" type="button" data-ir="desviar" aria-label="Desviar">
+          <svg viewBox="0 0 120 120" class="cartao-ico" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="#e3f0f7"/>
+            <path d="M44 18 L36 102 M76 18 L84 102" stroke="#b6cbd6" stroke-width="5" stroke-linecap="round"/>
+            <path d="M40 54 L32 36 L50 44 M80 54 L88 36 L70 44" fill="#8cb6d6" stroke="#4d5f6b" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/>
+            <circle cx="60" cy="64" r="26" fill="#8cb6d6" stroke="#4d5f6b" stroke-width="5"/>
+            <ellipse cx="60" cy="74" rx="13" ry="10" fill="#f6e7d2" stroke="#4d5f6b" stroke-width="4"/>
+            <circle cx="50" cy="58" r="3.4" fill="#4d5f6b"/><circle cx="70" cy="58" r="3.4" fill="#4d5f6b"/>
+            <path d="M55 72 q5 5 10 0" fill="none" stroke="#4d5f6b" stroke-width="3.5" stroke-linecap="round"/>
+          </svg>
+          <span class="cartao-nome">Desviar</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- COLORIR -->
+    <section id="tela-colorir" class="tela" aria-label="Colorir" hidden>
+      <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="provisorio"><p>Colorir</p></div>
+    </section>
+
+    <!-- DESVIAR -->
+    <section id="tela-desviar" class="tela" aria-label="Desviar" hidden>
+      <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="provisorio"><p>Desviar</p></div>
+    </section>
+
+  </main>
+
+  <script src="js/som.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
