@@ -18,16 +18,16 @@
 
   var $ = function (id) { return document.getElementById(id); };
   var el = {};
-  var ctxTinta, ctxContorno, scratch, ctxScratch;
+  var ctxTinta, ctxContorno, scratch, ctxScratch, mascara, ctxMasc, peca, ctxPeca;
   var barreira = new Uint8Array(N * N);   // 1 = linha do contorno (a tinta não passa)
   var marca = new Uint8Array(N * N);
 
   var estado = {
     ferramenta: 'pincel', tam: 1, cor: PALETA[0][0],
-    desenho: null, pronto: false, vista: 'galeria', categoria: 'dinos'
+    desenho: null, pronto: false, vista: 'galeria', categoria: 'dinos', dentro: true
   };
   var hist = [], posHist = 0, bbox = null;
-  var ativo = null, ultimo = null;
+  var ativo = null, ultimo = null, restrito = null; // restrito: null (livre), 'nada' ou 'regiao'
   var observador = null, avisoTimer = null;
 
   // ---------- util ----------
@@ -117,6 +117,7 @@
     FERRAMENTAS.forEach(function (f) {
       ferr.appendChild(botao('btn-ed ferr', f[1], Icones.svg(f[0]), { 'data-ferr': f[0] }));
     });
+    ferr.appendChild(botao('btn-ed', 'Pintar só dentro das linhas', Icones.svg('dentro'), { id: 'ed-dentro' }));
     [10, 17, 25].forEach(function (d, i) {
       tam.appendChild(botao('btn-ed tamanho', ['Pequeno', 'Médio', 'Grande'][i],
         '<span class="ponto" style="width:' + d + 'px;height:' + d + 'px"></span>', { 'data-tam': i }));
@@ -142,6 +143,13 @@
     scratch = document.createElement('canvas');
     scratch.width = scratch.height = N;
     ctxScratch = scratch.getContext('2d', { willReadFrequently: true });
+    mascara = document.createElement('canvas');
+    mascara.width = mascara.height = N;
+    ctxMasc = mascara.getContext('2d');
+    peca = document.createElement('canvas');
+    peca.width = peca.height = N;
+    ctxPeca = peca.getContext('2d');
+    estado.dentro = ler('dentro') !== '0';
 
     $('col-editor').addEventListener('click', function (ev) {
       var b = ev.target.closest('button, label.cor-outra');
@@ -151,6 +159,7 @@
       else if (b.hasAttribute('data-tam')) { escolherTamanho(+b.getAttribute('data-tam')); Som.tocar('toque'); }
       else if (b.hasAttribute('data-cor')) { escolherCor(b.getAttribute('data-cor')); Som.tocar('toque'); }
       else if (b.id === 'ed-galeria') { Som.tocar('voltar'); mostrarVista('galeria'); estado.desenho = null; estado.pronto = false; }
+      else if (b.id === 'ed-dentro') { estado.dentro = !estado.dentro; guardar('dentro', estado.dentro ? '1' : '0'); pintarDentro(); Som.tocar('toque'); }
       else if (b.id === 'ed-desfazer') { desfazer(); }
       else if (b.id === 'ed-refazer') { refazer(); }
       else if (b.id === 'ed-limpar') { limpar(); }
@@ -162,7 +171,14 @@
     escolherFerramenta(estado.ferramenta);
     escolherTamanho(estado.tam);
     escolherCor(estado.cor);
+    pintarDentro();
     atualizarBotoes();
+  }
+
+  function pintarDentro() {
+    var b = $('ed-dentro');
+    b.classList.toggle('sel', estado.dentro);
+    b.setAttribute('aria-pressed', estado.dentro ? 'true' : 'false');
   }
 
   function escolherFerramenta(f) {
@@ -277,28 +293,62 @@
     return { x: (ev.clientX - r.left) / r.width * N, y: (ev.clientY - r.top) / r.height * N };
   }
   function espessura() { return TAMANHOS[estado.ferramenta][estado.tam]; }
-  function configurarTraco() {
-    ctxTinta.lineCap = ctxTinta.lineJoin = 'round';
-    ctxTinta.lineWidth = espessura();
-    ctxTinta.strokeStyle = ctxTinta.fillStyle = estado.cor;
-    ctxTinta.globalCompositeOperation = estado.ferramenta === 'borracha' ? 'destination-out' : 'source-over';
+  function configurarTraco(c) {
+    c.lineCap = c.lineJoin = 'round';
+    c.lineWidth = espessura();
+    c.strokeStyle = c.fillStyle = estado.cor;
+    c.globalCompositeOperation = estado.ferramenta === 'borracha' ? 'destination-out' : 'source-over';
+  }
+  // desenha dentro do retângulo (x0,y0)-(x1,y1); com "dentro das linhas" o traço é cortado pela região
+  function pintar(x0, y0, x1, y1, fn) {
+    var r = espessura() / 2 + 2;
+    x0 -= r; y0 -= r; x1 += r; y1 += r;
+    marcar(x0, y0, x1, y1);
+    if (restrito === null) { configurarTraco(ctxTinta); fn(ctxTinta); return; }
+    if (restrito === 'nada') return;
+    var bx = Math.max(0, Math.floor(x0)), by = Math.max(0, Math.floor(y0));
+    var bw = Math.min(N, Math.ceil(x1)) - bx, bh = Math.min(N, Math.ceil(y1)) - by;
+    if (bw <= 0 || bh <= 0) return;
+    ctxPeca.globalCompositeOperation = 'source-over';
+    ctxPeca.clearRect(bx, by, bw, bh);
+    configurarTraco(ctxPeca);
+    fn(ctxPeca);
+    ctxPeca.globalCompositeOperation = 'destination-in';
+    ctxPeca.drawImage(mascara, bx, by, bw, bh, bx, by, bw, bh);
+    ctxPeca.globalCompositeOperation = 'source-over';
+    ctxTinta.drawImage(peca, bx, by, bw, bh, bx, by, bw, bh);
   }
   function ponto(p) {
-    configurarTraco();
-    var r = espessura() / 2;
-    ctxTinta.beginPath();
-    ctxTinta.arc(p.x, p.y, r, 0, Math.PI * 2);
-    ctxTinta.fill();
-    marcar(p.x - r - 2, p.y - r - 2, p.x + r + 2, p.y + r + 2);
+    pintar(p.x, p.y, p.x, p.y, function (c) {
+      c.beginPath();
+      c.arc(p.x, p.y, espessura() / 2, 0, Math.PI * 2);
+      c.fill();
+    });
   }
   function segmento(a, b) {
-    configurarTraco();
-    var r = espessura() / 2;
-    ctxTinta.beginPath();
-    ctxTinta.moveTo(a.x, a.y);
-    ctxTinta.lineTo(b.x, b.y);
-    ctxTinta.stroke();
-    marcar(Math.min(a.x, b.x) - r - 2, Math.min(a.y, b.y) - r - 2, Math.max(a.x, b.x) + r + 2, Math.max(a.y, b.y) + r + 2);
+    pintar(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.max(a.x, b.x), Math.max(a.y, b.y), function (c) {
+      c.beginPath();
+      c.moveTo(a.x, a.y);
+      c.lineTo(b.x, b.y);
+      c.stroke();
+    });
+  }
+  // prepara o recorte do traço: a região onde o dedo encostou primeiro
+  function prepararRecorte(p) {
+    restrito = null;
+    if (!estado.dentro || estado.ferramenta === 'borracha') return;
+    var ini = acharLivre(p);
+    if (!ini) { restrito = 'nada'; return; }
+    var bb = inundar(ini[0], ini[1]);
+    var w = bb[2] - bb[0] + 1, h = bb[3] - bb[1] + 1;
+    var img = ctxMasc.createImageData(w, h), px = img.data;
+    for (var y = 0; y < h; y++) {
+      var linha = (bb[1] + y) * N + bb[0];
+      for (var x = 0; x < w; x++) if (marca[linha + x]) px[(y * w + x) * 4 + 3] = 255;
+    }
+    ctxMasc.clearRect(0, 0, N, N);
+    ctxMasc.putImageData(img, bb[0], bb[1]);
+    restrito = 'regiao';
   }
 
   function ligarPonteiro() {
@@ -317,6 +367,7 @@
         ativo = null;
         return;
       }
+      prepararRecorte(p);
       ponto(p);
       ultimo = p;
     });
@@ -328,7 +379,7 @@
     });
     function fim(ev) {
       if (ev.pointerId !== ativo) return;
-      ativo = null; ultimo = null;
+      ativo = null; ultimo = null; restrito = null;
       ctxTinta.globalCompositeOperation = 'source-over';
       fimAcao();
     }
@@ -337,23 +388,25 @@
   }
 
   // ---------- balde de tinta ----------
-  function preencher(p) {
+  // ponto livre (fora da linha) mais perto de p; null se não houver
+  function acharLivre(p) {
     var x0 = Math.max(0, Math.min(N - 1, Math.round(p.x))), y0 = Math.max(0, Math.min(N - 1, Math.round(p.y)));
-    if (barreira[y0 * N + x0]) {
-      // caiu em cima da linha: procura o pontinho livre mais perto (dedinho grande)
-      var achou = false;
-      for (var raio = 1; raio <= 14 && !achou; raio++) {
-        for (var dy = -raio; dy <= raio && !achou; dy++) {
-          for (var dx = -raio; dx <= raio; dx++) {
-            if (Math.max(Math.abs(dx), Math.abs(dy)) !== raio) continue;
-            var xx = x0 + dx, yy = y0 + dy;
-            if (xx < 0 || yy < 0 || xx >= N || yy >= N) continue;
-            if (!barreira[yy * N + xx]) { x0 = xx; y0 = yy; achou = true; break; }
-          }
+    if (!barreira[y0 * N + x0]) return [x0, y0];
+    for (var raio = 1; raio <= 14; raio++) {
+      for (var dy = -raio; dy <= raio; dy++) {
+        for (var dx = -raio; dx <= raio; dx++) {
+          if (Math.max(Math.abs(dx), Math.abs(dy)) !== raio) continue;
+          var xx = x0 + dx, yy = y0 + dy;
+          if (xx < 0 || yy < 0 || xx >= N || yy >= N) continue;
+          if (!barreira[yy * N + xx]) return [xx, yy];
         }
       }
-      if (!achou) return;
     }
+    return null;
+  }
+
+  // marca (em "marca") toda a região ligada ao ponto; devolve [minX, minY, maxX, maxY]
+  function inundar(x0, y0) {
     marca.fill(0);
     var pilha = [x0, y0];
     var minX = x0, maxX = x0, minY = y0, maxY = y0;
@@ -380,6 +433,14 @@
         }
       }
     }
+    return [minX, minY, maxX, maxY];
+  }
+
+  function preencher(p) {
+    var ini = acharLivre(p);
+    if (!ini) return;
+    var bb = inundar(ini[0], ini[1]);
+    var minX = bb[0], minY = bb[1], maxX = bb[2], maxY = bb[3];
     var w = maxX - minX + 1, h = maxY - minY + 1;
     var img = ctxTinta.getImageData(minX, minY, w, h), px = img.data;
     var rgb = hexParaRgb(estado.cor);

@@ -184,6 +184,35 @@ def testar(p, base, nome, **ctx_args):
     ator.arrasta([(800, 80), (900, 140), (820, 200)])
     confere(pag.evaluate(JS_ALFA) > antes, "lápis pinta")
 
+    # ---- pintar só dentro das linhas (padrão) ----
+    botao(pag, "#ed-limpar", toque)
+    confere(pag.locator("#ed-dentro").get_attribute("aria-pressed") == "true", "'dentro das linhas' vem ligado")
+    botao(pag, '.cor[data-cor="#e45b5b"]', toque)
+    botao(pag, '[data-ferr="pincel"]', toque)
+    botao(pag, '[data-tam="2"]', toque)
+    ator.arrasta([(500, 700), (500, 760), (500, 600), (500, 330), (500, 150), (60, 30)])  # barriga -> cabeça -> fundo
+    confere(pag.evaluate(JS_PIXEL, [512, 752])[3] == 255, "traço pinta a barriga (onde começou)")
+    confere(pag.evaluate(JS_PIXEL, [512, 360])[3] == 0, "traço não passa para a cabeça")
+    confere(pag.evaluate(JS_PIXEL, [512, 100])[3] == 0 and pag.evaluate(JS_PIXEL, [60, 40])[3] == 0, "traço não vaza para o fundo")
+    # começar no fundo: pinta o fundo, mas não entra no personagem
+    botao(pag, "#ed-limpar", toque)
+    ator.arrasta([(60, 60), (60, 500), (500, 500), (940, 500)])
+    confere(pag.evaluate(JS_PIXEL, [61, 100])[3] == 255, "traço pinta o fundo onde começou")
+    confere(pag.evaluate(JS_PIXEL, [512, 500])[3] == 0, "traço do fundo não entra no personagem")
+    # desligando, o traço fica livre
+    botao(pag, "#ed-dentro", toque)
+    confere(pag.locator("#ed-dentro").get_attribute("aria-pressed") == "false", "botão desliga o 'dentro das linhas'")
+    botao(pag, "#ed-limpar", toque)
+    ator.arrasta([(500, 700), (500, 330)])
+    confere(pag.evaluate(JS_PIXEL, [512, 360])[3] == 255, "desligado: o traço passa livre para a cabeça")
+    botao(pag, "#ed-dentro", toque)
+    # desfazer funciona com o traço recortado
+    botao(pag, "#ed-limpar", toque)
+    ator.arrasta([(500, 700), (500, 760)])
+    botao(pag, "#ed-desfazer", toque)
+    confere(pag.evaluate(JS_ALFA) == 0, "desfazer apaga o traço recortado")
+    ator.arrasta([(500, 700), (500, 760)])  # deixa algo no desenho para o teste de "limpar" abaixo
+
     # ---- balde: pinta só a barriga, sem vazar ----
     botao(pag, "#ed-limpar", toque)
     confere(pag.evaluate(JS_ALFA) == 0, "limpar apaga tudo")

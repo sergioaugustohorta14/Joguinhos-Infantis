@@ -14,6 +14,7 @@
     desfazer: '<g ' + L + '><path d="M18 12 L9 21 L18 30"/><path d="M10 21 H29 A10 10 0 0 1 29 41 H19"/></g>',
     limpar: '<g ' + L + '><path d="M10 14 H38"/><path d="M19 14 V9 H29 V14"/><path d="M13 14 L15 40 H33 L35 14"/><path d="M21 21 V33 M27 21 V33"/></g>',
     salvar: '<g ' + L + '><path d="M24 7 V29"/><path d="M14 20 L24 30 L34 20"/><path d="M9 34 V41 H39 V34"/></g>',
+    dentro: '<g ' + L + '><rect x="8" y="8" width="32" height="32" rx="8" stroke-dasharray="1 7"/><path d="M16 29 L22 19 L27 30 L33 20"/></g>',
     som: ''
   };
 
