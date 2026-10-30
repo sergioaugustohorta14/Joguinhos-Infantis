@@ -1,6 +1,5 @@
 """Servidor local para desenvolver e testar: python tools/servir.py [porta]"""
 import http.server
-import socketserver
 import sys
 from pathlib import Path
 
@@ -22,7 +21,7 @@ class Handler(http.server.SimpleHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("127.0.0.1", PORTA), Handler) as httpd:
+    http.server.ThreadingHTTPServer.allow_reuse_address = True
+    with http.server.ThreadingHTTPServer(("127.0.0.1", PORTA), Handler) as httpd:
         print(f"Servindo {RAIZ} em http://127.0.0.1:{PORTA}")
         httpd.serve_forever()

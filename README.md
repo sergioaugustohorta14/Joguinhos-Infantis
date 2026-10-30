@@ -7,7 +7,17 @@ Dois jogos calminhos para crianças de 5 e 6 anos, para celular, tablet Android 
 
 HTML5 Canvas e JavaScript puro, funciona offline (PWA). Sem coleta de dados e sem conta.
 
-> README provisório (Fase 1). A versão final vem na última fase.
+> README provisório (Fase 2). A versão final vem na última fase.
+
+## Colorir (pronto)
+
+- 500 desenhos em 6 categorias (dinossauros, gatinhos, cachorrinhos, heróis, bichinhos e natureza).
+- São 50 bases desenhadas em código (`js/desenhos/`) e 9 variações de cada (rosto, acessório e cenário).
+- Ferramentas: lápis, pincel, borracha e balde de tinta, com 3 tamanhos, 16 cores e seletor de cor livre.
+- Desfazer, refazer, limpar e salvar como PNG 1024x1024 para imprimir.
+- Duas camadas: a tinta fica por baixo e o contorno por cima.
+
+Para conferir os desenhos a olho: `.venv\Scripts\python.exe toolsmostras.py saida.png "cat=dinos&v=0,3&col=3"`.
 
 ## Testar no computador
 

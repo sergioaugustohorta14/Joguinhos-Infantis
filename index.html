@@ -11,6 +11,7 @@
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/colorir.css">
 </head>
 <body>
   <main id="app">
@@ -54,12 +55,35 @@
 
     <!-- COLORIR -->
     <section id="tela-colorir" class="tela" aria-label="Colorir" hidden>
-      <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
-        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
-          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div class="provisorio"><p>Colorir</p></div>
+
+      <div id="col-galeria" class="col-vista">
+        <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
+          <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+            <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+          </svg>
+        </button>
+        <nav id="col-abas" class="col-abas" aria-label="Tipos de desenho"></nav>
+        <div id="col-grade" class="col-grade"></div>
+      </div>
+
+      <div id="col-editor" class="col-vista" hidden>
+        <div id="ed-esq">
+          <div id="ed-acoes"></div>
+          <div id="ed-ferr"></div>
+        </div>
+        <div id="ed-tela">
+          <div id="ed-pagina">
+            <canvas id="cv-tinta"></canvas>
+            <canvas id="cv-contorno"></canvas>
+          </div>
+        </div>
+        <div id="ed-dir">
+          <div id="ed-tam"></div>
+          <div id="ed-paleta"></div>
+        </div>
+        <div id="ed-aviso" class="aviso" role="status" hidden></div>
+      </div>
+
     </section>
 
     <!-- DESVIAR -->
@@ -75,6 +99,15 @@
   </main>
 
   <script src="js/som.js"></script>
+  <script src="js/icones.js"></script>
+  <script src="js/desenhos/motor.js"></script>
+  <script src="js/desenhos/dinos.js"></script>
+  <script src="js/desenhos/gatos.js"></script>
+  <script src="js/desenhos/caes.js"></script>
+  <script src="js/desenhos/herois.js"></script>
+  <script src="js/desenhos/bichinhos.js"></script>
+  <script src="js/desenhos/natureza.js"></script>
+  <script src="js/colorir.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@ html, body {
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
   animation: aparecer 0.35s ease both;
 }
-.tela[hidden] { display: none !important; } /* senão "display:grid" do menu vence o atributo hidden */
+[hidden] { display: none !important; } /* senão regras como "display:grid" vencem o atributo hidden */
 
 @keyframes aparecer { from { opacity: 0; } to { opacity: 1; } }
 

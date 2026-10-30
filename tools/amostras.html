@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><title>Amostras</title>
+<style>
+  body { margin: 0; background: #fff; font: 14px sans-serif; }
+  #grade { display: grid; gap: 4px; padding: 4px; }
+  .a { border: 1px solid #ddd; position: relative; aspect-ratio: 1; }
+  .a img { width: 100%; height: 100%; display: block; }
+  .a b { position: absolute; left: 4px; top: 2px; font-size: 12px; color: #c00; }
+</style></head><body><div id="grade"></div>
+<script src="../js/desenhos/motor.js"></script>
+<script src="../js/desenhos/dinos.js"></script>
+<script src="../js/desenhos/gatos.js"></script>
+<script src="../js/desenhos/caes.js"></script>
+<script src="../js/desenhos/herois.js"></script>
+<script src="../js/desenhos/bichinhos.js"></script>
+<script src="../js/desenhos/natureza.js"></script>
+<script>
+  // ?cat=dinos&v=0,3&col=3   (v = variantes; sem v = só a variante 0)  |  ?ids=trex-0,gato1-4
+  var q = new URLSearchParams(location.search);
+  var cat = q.get('cat'), vs = (q.get('v') || '0').split(',').map(Number), col = +(q.get('col') || 3);
+  var ids = q.get('ids');
+  var itens = Desenhos.todos().filter(function (d) {
+    if (ids) return ids.split(',').indexOf(d.id) >= 0;
+    return (!cat || d.cat === cat) && vs.indexOf(+d.id.split('-').pop()) >= 0;
+  });
+  var g = document.getElementById('grade');
+  g.style.gridTemplateColumns = 'repeat(' + col + ', 1fr)';
+  itens.forEach(function (d) {
+    var div = document.createElement('div'); div.className = 'a';
+    div.innerHTML = '<img src="data:image/svg+xml;charset=utf-8,' + encodeURIComponent(Desenhos.svgTexto(d, '#333')) + '"><b>' + d.id + '</b>';
+    g.appendChild(div);
+  });
+</script></body></html>

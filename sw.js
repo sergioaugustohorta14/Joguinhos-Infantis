@@ -1,14 +1,24 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v1';
+var VERSAO = 'joguinhos-v2';
 
 var ARQUIVOS = [
   './',
   'index.html',
   'manifest.webmanifest',
   'css/style.css',
+  'css/colorir.css',
   'js/som.js',
   'js/app.js',
+  'js/icones.js',
+  'js/colorir.js',
+  'js/desenhos/motor.js',
+  'js/desenhos/dinos.js',
+  'js/desenhos/gatos.js',
+  'js/desenhos/caes.js',
+  'js/desenhos/herois.js',
+  'js/desenhos/bichinhos.js',
+  'js/desenhos/natureza.js',
   'icons/icon.svg',
   'icons/icon-192.png',
   'icons/icon-512.png',
