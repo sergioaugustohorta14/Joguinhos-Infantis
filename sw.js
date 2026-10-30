@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v4';
+var VERSAO = 'joguinhos-v5';
 
 var ARQUIVOS = [
   './',
@@ -40,19 +40,27 @@ self.addEventListener('activate', function (ev) {
   );
 });
 
-// Cache primeiro; o que não estiver guardado vem da rede e é guardado para a próxima vez.
+// Rede primeiro (assim as novidades chegam logo, sem precisar limpar nada);
+// sem internet, ou se a rede demorar demais, usa o que está guardado no aparelho.
+function comTempo(promessa, ms) {
+  return new Promise(function (ok, erro) {
+    var t = setTimeout(function () { erro(new Error('demorou')); }, ms);
+    promessa.then(function (r) { clearTimeout(t); ok(r); }, function (e) { clearTimeout(t); erro(e); });
+  });
+}
+
 self.addEventListener('fetch', function (ev) {
   if (ev.request.method !== 'GET') return;
+  if (new URL(ev.request.url).origin !== self.location.origin) return;
   ev.respondWith(
-    caches.match(ev.request).then(function (achado) {
-      if (achado) return achado;
-      return fetch(ev.request).then(function (resp) {
-        if (resp && resp.ok && new URL(ev.request.url).origin === self.location.origin) {
-          var copia = resp.clone();
-          caches.open(VERSAO).then(function (c) { c.put(ev.request, copia); });
-        }
-        return resp;
-      });
+    comTempo(fetch(ev.request, { cache: 'no-cache' }), 4000).then(function (resp) {
+      if (resp && resp.ok) {
+        var copia = resp.clone();
+        caches.open(VERSAO).then(function (c) { c.put(ev.request, copia); });
+      }
+      return resp;
+    }).catch(function () {
+      return caches.match(ev.request).then(function (achado) { return achado || caches.match('index.html'); });
     })
   );
 });

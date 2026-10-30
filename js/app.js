@@ -65,6 +65,13 @@
 
   // PWA offline
   if ('serviceWorker' in navigator) {
+    // quando uma versão nova assume, recarrega sozinho, mas só se a criança estiver no menu
+    // (nunca no meio de um desenho ou de uma corrida)
+    var tinhaControle = !!navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (tinhaControle && atual === 'menu') location.reload();
+      tinhaControle = true;
+    });
     window.addEventListener('load', function () {
       navigator.serviceWorker.register('sw.js').catch(function () { /* sem SW (ex.: file://) o jogo segue online */ });
     });
