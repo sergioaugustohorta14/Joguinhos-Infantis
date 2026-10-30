@@ -7,7 +7,7 @@ Dois jogos calminhos para crianças de 5 e 6 anos, para celular, tablet Android 
 
 HTML5 Canvas e JavaScript puro, funciona offline (PWA). Sem coleta de dados e sem conta.
 
-> README provisório (Fase 2). A versão final vem na última fase.
+> README provisório (Fase 3). A versão final vem na última fase.
 
 ## Colorir (pronto)
 

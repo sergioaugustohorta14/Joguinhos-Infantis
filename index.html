@@ -12,6 +12,7 @@
   <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/colorir.css">
+  <link rel="stylesheet" href="css/desviar.css">
 </head>
 <body>
   <main id="app">
@@ -88,12 +89,54 @@
 
     <!-- DESVIAR -->
     <section id="tela-desviar" class="tela" aria-label="Desviar" hidden>
+      <canvas id="cv-jogo"></canvas>
+
       <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
         <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
           <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
         </svg>
       </button>
-      <div class="provisorio"><p>Desviar</p></div>
+
+      <div id="dv-hud" class="dv-hud" hidden>
+        <div class="dv-pontos">
+          <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 29.5 18.5 44 19.5 33 29 36.5 43 24 35.5 11.5 43 15 29 4 19.5 18.5 18.5Z"/></svg>
+          <span id="dv-n">0</span>
+        </div>
+        <div id="dv-vidas" class="dv-vidas" aria-label="Vidas"></div>
+      </div>
+
+      <div id="dv-escolha" class="dv-camada">
+        <p class="dv-recorde"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 29.5 18.5 44 19.5 33 29 36.5 43 24 35.5 11.5 43 15 29 4 19.5 18.5 18.5Z"/></svg> Recorde: <b id="dv-rec">0</b></p>
+        <div class="dv-cartoes">
+          <button class="dv-card" type="button" data-heroi="ourico" aria-label="Jogar com o Turbo"><canvas width="240" height="240"></canvas><span>Turbo</span></button>
+          <button class="dv-card" type="button" data-heroi="cao" aria-label="Jogar com o Bolinha"><canvas width="240" height="240"></canvas><span>Bolinha</span></button>
+        </div>
+        <ul class="dv-ajuda" aria-label="Como jogar">
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M6 24h36M16 14 6 24l10 10M32 14l10 10-10 10"/></svg><span>desviar</span></li>
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 40V8M14 18 24 8l10 10"/></svg><span>pular</span></li>
+          <li><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 8v32M14 30l10 10 10-10"/></svg><span>agachar</span></li>
+        </ul>
+      </div>
+
+      <div id="dv-fim" class="dv-camada" hidden>
+        <div class="dv-painel">
+          <h2>Boa corrida!</h2>
+          <p class="dv-grande"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 29.5 18.5 44 19.5 33 29 36.5 43 24 35.5 11.5 43 15 29 4 19.5 18.5 18.5Z"/></svg><b id="dv-final">0</b></p>
+          <p id="dv-novo" class="dv-novo" hidden>Novo recorde!</p>
+          <p class="dv-pequeno">Recorde: <b id="dv-recorde-fim">0</b></p>
+          <div class="dv-botoes">
+            <button id="dv-denovo" class="btn-ed dv-btn" type="button" aria-label="Jogar de novo">
+              <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M38 24a14 14 0 1 1-5-10.7M33 6v9h9" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="dv-trocar" class="btn-ed dv-btn" type="button" aria-label="Escolher o personagem">
+              <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><circle cx="18" cy="17" r="7" fill="none" stroke="currentColor" stroke-width="3.6"/><circle cx="32" cy="22" r="6" fill="none" stroke="currentColor" stroke-width="3.6"/><path d="M6 40c1-8 7-12 12-12s11 4 12 12M26 40c1-5 4-8 8-8s8 3 9 8" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"/></svg>
+            </button>
+            <button class="btn-ed dv-btn" type="button" data-ir="menu" aria-label="Voltar para o início">
+              <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
     </section>
 
   </main>
@@ -108,6 +151,7 @@
   <script src="js/desenhos/bichinhos.js"></script>
   <script src="js/desenhos/natureza.js"></script>
   <script src="js/colorir.js"></script>
+  <script src="js/desviar.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
