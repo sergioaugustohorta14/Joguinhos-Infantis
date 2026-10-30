@@ -17,7 +17,7 @@ HTML5 Canvas e JavaScript puro, funciona offline (PWA). Sem coleta de dados e se
 - Desfazer, refazer, limpar e salvar como PNG 1024x1024 para imprimir.
 - Duas camadas: a tinta fica por baixo e o contorno por cima.
 
-Para conferir os desenhos a olho: `.venv\Scripts\python.exe toolsmostras.py saida.png "cat=dinos&v=0,3&col=3"`.
+Para conferir os desenhos a olho: `.venv\Scripts\python.exe tools\amostras.py saida.png "cat=dinos&v=0,3&col=3"`.
 
 ## Testar no computador
 
