@@ -1,4 +1,4 @@
-"""Fase 2: galeria de 500 desenhos e editor de colorir (toque, balde, borracha, desfazer, salvar).
+"""Fase 2: galeria de 560 desenhos e editor de colorir (toque, balde, borracha, desfazer, salvar).
 Rodar: .venv\\Scripts\\python.exe tests\\test_fase2.py
 """
 import socket
@@ -104,7 +104,7 @@ def testar(p, base, nome, **ctx_args):
     botao(pag, ".cartao-colorir", toque)
     pag.wait_for_timeout(600)
     confere(pag.locator("#col-galeria").is_visible(), "galeria abre")
-    confere(pag.locator(".aba").count() == 6, "6 categorias na galeria")
+    confere(pag.locator(".aba").count() == 7, "7 categorias na galeria")
     pag.screenshot(path=str(CAPTURAS / f"{nome}-galeria.png"))
 
     # trocar de categoria
@@ -299,9 +299,9 @@ def checar_catalogo(p, base):
           return { total: t.length, unicos: ids.size, svgsUnicos: svgs.size, porCat, bases: Desenhos.bases().length };
         }"""
     )
-    confere(r["bases"] == 50, f"50 bases desenhadas ({r['bases']})")
-    confere(r["total"] == 500 and r["unicos"] == 500, f"500 desenhos com ids únicos ({r['total']}/{r['unicos']})")
-    confere(r["svgsUnicos"] == 500, f"500 imagens diferentes entre si ({r['svgsUnicos']})")
+    confere(r["bases"] == 56, f"56 bases desenhadas ({r['bases']})")
+    confere(r["total"] == 560 and r["unicos"] == 560, f"560 desenhos com ids únicos ({r['total']}/{r['unicos']})")
+    confere(r["svgsUnicos"] == 560, f"560 imagens diferentes entre si ({r['svgsUnicos']})")
     print("      por categoria:", r["porCat"])
     confere(not erros, f"catálogo sem erros ({erros})")
     nav.close()
@@ -309,7 +309,7 @@ def checar_catalogo(p, base):
 
 def checar_vazamento(p, base):
     """Para cada desenho: confere que há várias regiões e que o fundo não engoliu o personagem."""
-    print("\n== vazamento do balde (todos os 500) ==")
+    print("\n== vazamento do balde (todos os 560) ==")
     nav = p.chromium.launch()
     pag = nav.new_page()
     pag.goto(base)

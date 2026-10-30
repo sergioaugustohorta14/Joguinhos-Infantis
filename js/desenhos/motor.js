@@ -230,6 +230,7 @@
     { id: 'gatinhos', nome: 'Gatinhos' },
     { id: 'cachorrinhos', nome: 'Cachorrinhos' },
     { id: 'herois', nome: 'Heróis' },
+    { id: 'unicornios', nome: 'Unicórnios' },
     { id: 'bichinhos', nome: 'Bichinhos' },
     { id: 'natureza', nome: 'Natureza' }
   ];

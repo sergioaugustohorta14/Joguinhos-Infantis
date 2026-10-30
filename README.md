@@ -2,7 +2,7 @@
 
 Dois jogos calminhos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
 
-- **Colorir**: 500 desenhos de contorno para pintar, com lápis, pincel, borracha e balde de tinta.
+- **Colorir**: 560 desenhos de contorno para pintar, com lápis, pincel, borracha e balde de tinta.
 - **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo.
 
 Funciona sem internet depois da primeira abertura (PWA). **Não coleta nenhum dado**: sem conta, sem anúncios, sem rastreadores. Só guarda no próprio aparelho o recorde, a preferência de som e a opção de pintar dentro das linhas.
@@ -12,7 +12,7 @@ Feito com HTML, CSS e JavaScript puros, sem bibliotecas e sem etapa de compilaç
 ## Como jogar
 
 ### Colorir
-1. Escolha o tipo de desenho no alto (dinossauros, gatinhos, cachorrinhos, heróis, bichinhos ou natureza) e toque no desenho.
+1. Escolha o tipo de desenho no alto (dinossauros, gatinhos, cachorrinhos, heróis, unicórnios, bichinhos ou natureza) e toque no desenho.
 2. Escolha a ferramenta, o tamanho e a cor, e pinte com o dedo.
 3. O botão tracejado liga e desliga o "pintar só dentro das linhas". Ele vem ligado: o traço fica na região onde o dedo encostou primeiro.
 4. Desfazer, refazer, limpar tudo e salvar (vira um PNG de 1024x1024 na pasta Downloads, bom para imprimir).
@@ -54,7 +54,7 @@ python -m venv .venv
 
 ```powershell
 .\.venv\Scripts\python.exe tests\test_fase1.py      # menu, navegação, som e offline
-.\.venv\Scripts\python.exe tests\test_fase2.py      # Colorir: 500 desenhos, balde sem vazar, desfazer, salvar (uns 2 min)
+.\.venv\Scripts\python.exe tests\test_fase2.py      # Colorir: 560 desenhos, balde sem vazar, desfazer, salvar (uns 2 min)
 .\.venv\Scripts\python.exe tests\test_fase3.py      # Desviar: gestos, obstáculos, vidas, recorde, fim de jogo
 ```
 
@@ -72,14 +72,14 @@ js/som.js             sons gerados no código (Web Audio), sem arquivos de áudi
 js/icones.js          ícones dos botões
 js/colorir.js         galeria e editor de pintura
 js/desviar.js         jogo de corrida
-js/desenhos/          os 500 desenhos (50 bases + variações)
+js/desenhos/          os 560 desenhos (56 bases + variações)
 icons/                ícone do app
 tools/                servidor local, gerador de ícones, folha de amostras dos desenhos
 tests/                testes automáticos
 ```
 
 ### Como os desenhos funcionam
-Cada uma das 50 bases (`js/desenhos/dinos.js`, `gatos.js`, `caes.js`, `herois.js`, `bichinhos.js`, `natureza.js`) é um desenho em SVG feito em código, com contornos fechados. O motor (`motor.js`) cria 9 variações de cada uma, combinando expressão do rosto, acessório e cenário, sempre iguais em qualquer aparelho. No editor, o contorno vira uma camada que fica por cima da tinta, e o balde e o "pintar dentro das linhas" usam esse contorno como parede.
+Cada uma das 56 bases (`js/desenhos/dinos.js`, `gatos.js`, `caes.js`, `herois.js`, `unicornios.js`, `bichinhos.js`, `natureza.js`) é um desenho em SVG feito em código, com contornos fechados. O motor (`motor.js`) cria 9 variações de cada uma, combinando expressão do rosto, acessório e cenário, sempre iguais em qualquer aparelho. No editor, o contorno vira uma camada que fica por cima da tinta, e o balde e o "pintar dentro das linhas" usam esse contorno como parede.
 
 Para ver os desenhos a olho: `.\.venv\Scripts\python.exe tools\amostras.py saida.png "cat=dinos&v=0,3&col=3"`.
 

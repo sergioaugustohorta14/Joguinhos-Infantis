@@ -26,7 +26,7 @@ Projeto **particular** (não é da Sport Labs): dois jogos calminhos para crian�
 | `js/colorir.js` | galeria + editor: duas camadas, histórico por retângulo, balde, "pintar dentro das linhas", salvar PNG |
 | `js/desviar.js` | corrida em perspectiva; constantes de dificuldade no topo |
 | `js/desenhos/motor.js` | formas, rosto, acessórios, cenários e as 9 variações por base |
-| `js/desenhos/*.js` | as 50 bases por categoria (dinos 9, gatos 7, cães 7, heróis 6, bichinhos 12, natureza 9) |
+| `js/desenhos/*.js` | as 56 bases por categoria (dinos 9, gatos 7, cães 7, heróis 6, unicórnios 6, bichinhos 12, natureza 9) |
 | `sw.js` | rede primeiro, cache de reserva; lista `ARQUIVOS` e `VERSAO` |
 | `tools/` | `servir.py` (servidor com threads), `amostras.py` (folha de desenhos), `gerar_icones.py` |
 | `tests/` | `test_fase1.py` (menu/offline), `test_fase2.py` (Colorir), `test_fase3.py` (Desviar) |
@@ -45,7 +45,7 @@ Ambiente: `python -m venv .venv`, depois `pip install playwright` e `playwright 
 - Tela de 1000x1000. O que fica na frente esconde o traço de trás (formas com preenchimento branco).
 - `cara` é onde o motor desenha olhos, boca e bochechas (olhos em `y`, nariz em `y+10k`, boca em `y+24k`; `k` = escala). `cabeca` é onde chapéus, laço e óculos se apoiam. `pescoco:[x,y,escala]` opcional para gravata e cachecol. `semChapeu:true` se já usa chapéu; `semBoca:true` se não tem boca (coruja).
 - **Todo contorno precisa ser fechado**, senão a tinta do balde vaza. O teste de vazamento do `test_fase2.py` cobre todos os desenhos.
-- Cada base gera 10 desenhos; o catálogo tem de fechar em 10 por base (hoje 50 bases e 500). Se mudar o número de bases, ajustar as contas dos testes e do README.
+- Cada base gera 10 desenhos; o catálogo tem de fechar em 10 por base (hoje 56 bases e 560). Se mudar o número de bases, ajustar as contas dos testes e do README.
 - Conferir a olho: `.\.venv\Scripts\python.exe tools\amostras.py saida.png "cat=dinos&v=0,3&col=3"` (ou `"ids=trex-0,trex-4&col=2"`) e abrir a imagem.
 - Personagens **originais**: inspirados em estilos, nunca cópias de marcas conhecidas.
 
