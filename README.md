@@ -24,7 +24,8 @@ Para conferir os desenhos a olho: `.venv\Scripts\python.exe toolsmostras.py sai
 ```powershell
 cd "D:\Jogos Infantis para Filhos"
 .\.venv\Scripts\python.exe tools\servir.py        # abre em http://127.0.0.1:8000
-.\.venv\Scripts\python.exe tests\test_fase1.py    # testes com Playwright
+.\.venv\Scripts\python.exe tests\test_fase1.py    # menu, navegação e offline
+.\.venv\Scripts\python.exe tests\test_fase2.py    # Colorir (leva uns 2 minutos)
 ```
 
 Preparar o ambiente do zero:
