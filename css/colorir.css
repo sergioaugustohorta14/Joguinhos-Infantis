@@ -172,3 +172,6 @@
   #ed-tam { grid-column: 6 / 9; grid-row: 3; }
   #ed-paleta { grid-column: 1 / -1; grid-row: 4; grid-template-columns: repeat(6, 1fr); gap: 8px; padding: 0 4px; }
 }
+
+/* miniaturas de imagem (fundo branco) combinam com o cartao */
+.tile img, .aba img { mix-blend-mode: multiply; }

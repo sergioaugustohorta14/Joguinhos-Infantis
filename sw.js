@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v9';
+var VERSAO = 'joguinhos-v10';
 
 var ARQUIVOS = [
   './',
@@ -29,6 +29,11 @@ var ARQUIVOS = [
   'icons/icon-512.png',
   'icons/icon-maskable-512.png'
 ];
+
+// desenhos de imagem importados: a lista fica em desenhos/lista.js
+try { importScripts('desenhos/lista.js'); } catch (e) { /* sem lista, só os desenhados em código */ }
+(self.DESENHOS_IMAGENS || []).forEach(function (d) { ARQUIVOS.push(d.arq, d.mini); });
+ARQUIVOS.push('desenhos/lista.js');
 
 self.addEventListener('install', function (ev) {
   ev.waitUntil(caches.open(VERSAO).then(function (c) { return c.addAll(ARQUIVOS); }));

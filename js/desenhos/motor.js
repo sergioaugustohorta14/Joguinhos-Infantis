@@ -4,7 +4,7 @@
 (function () {
   'use strict';
 
-  var SW0 = 10;     // espessura do traço em coordenadas do desenho
+  var SW0 = 6;      // espessura do traço em coordenadas do desenho (fina, como em livro de colorir)
   var sw = SW0;     // espessura atual (muda dentro de grupos com escala)
 
   function f(v) { return Math.round(v * 10) / 10; }
@@ -232,7 +232,8 @@
     { id: 'herois', nome: 'Heróis' },
     { id: 'unicornios', nome: 'Unicórnios' },
     { id: 'bichinhos', nome: 'Bichinhos' },
-    { id: 'natureza', nome: 'Natureza' }
+    { id: 'natureza', nome: 'Natureza' },
+    { id: 'bobbie', nome: 'Bobbie Goods' }
   ];
 
   var bases = [];
@@ -258,6 +259,10 @@
   function todos() {
     if (lista) return lista;
     lista = [];
+    // desenhos de imagem (importados por tools/importar_desenhos.py) vêm primeiro em cada categoria
+    (window.DESENHOS_IMAGENS || []).forEach(function (im) {
+      lista.push({ id: im.id, cat: im.cat, url: im.arq, mini: im.mini });
+    });
     bases.forEach(function (b, i) {
       variantesDe(i, b).forEach(function (v, j) {
         lista.push({ id: b.id + '-' + j, cat: b.cat, base: b, variante: v });
@@ -284,7 +289,8 @@
 
   window.Desenhos = {
     H: H,
-    categorias: CATEGORIAS,
+    // só aparecem as categorias que têm desenho
+    get categorias() { var l = todos(); return CATEGORIAS.filter(function (c) { return l.some(function (d) { return d.cat === c.id; }); }); },
     add: function (b) { bases.push(b); },
     bases: function () { return bases; },
     todos: todos,

@@ -2,7 +2,7 @@
 
 Dois jogos calminhos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
 
-- **Colorir**: 560 desenhos de contorno para pintar, com lápis, pincel, borracha e balde de tinta.
+- **Colorir**: 560 desenhos de contorno feitos em código (mais os que você importar de imagens, ver `desenhos/LEIA-ME.md`) para pintar, com lápis, pincel, borracha e balde de tinta.
 - **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo, em 5 fases com cenários diferentes.
 - **Bolinhas**: quebra-cabeça de ordenar bolinhas por cor numa esteira, com níveis que vão ficando mais difíceis.
 
@@ -13,7 +13,7 @@ Feito com HTML, CSS e JavaScript puros, sem bibliotecas e sem etapa de compilaç
 ## Como jogar
 
 ### Colorir
-1. Escolha o tipo de desenho no alto (dinossauros, gatinhos, cachorrinhos, heróis, unicórnios, bichinhos ou natureza) e toque no desenho.
+1. Escolha o tipo de desenho no alto (dinossauros, gatinhos, cachorrinhos, heróis, unicórnios, bichinhos, natureza ou Bobbie Goods; esta última só aparece quando tem desenho) e toque no desenho.
 2. Escolha a ferramenta, o tamanho e a cor, e pinte com o dedo.
 3. O botão tracejado liga e desliga o "pintar só dentro das linhas". Ele vem ligado: o traço fica na região onde o dedo encostou primeiro.
 4. Desfazer, refazer, limpar tudo e salvar (vira um PNG de 1024x1024 na pasta Downloads, bom para imprimir).
@@ -88,6 +88,9 @@ icons/                ícone do app
 tools/                servidor local, gerador de ícones, folha de amostras dos desenhos
 tests/                testes automáticos
 ```
+
+### Desenhos de imagem
+Os desenhos feitos em código são simples. Para ter desenhos mais bonitos, coloque imagens prontas (preto no branco) em `desenhos-novos/<categoria>/` e rode `.\.venv\Scripts\python.exe tools\importar_desenhos.py`: o script limpa a imagem, cria a miniatura, atualiza a galeria e o `sw.js`. O guia, com modelo de pedido para gerar imagens, está em `desenhos/LEIA-ME.md`. Teste: `tests\test_imagens.py`.
 
 ### Como os desenhos funcionam
 Cada uma das 56 bases (`js/desenhos/dinos.js`, `gatos.js`, `caes.js`, `herois.js`, `unicornios.js`, `bichinhos.js`, `natureza.js`) é um desenho em SVG feito em código, com contornos fechados. O motor (`motor.js`) cria 9 variações de cada uma, combinando expressão do rosto, acessório e cenário, sempre iguais em qualquer aparelho. No editor, o contorno vira uma camada que fica por cima da tinta, e o balde e o "pintar dentro das linhas" usam esse contorno como parede.

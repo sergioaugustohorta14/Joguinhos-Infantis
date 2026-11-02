@@ -330,7 +330,7 @@ def checar_vazamento(p, base):
     pag.wait_for_load_state("networkidle")
     res = pag.evaluate(
         """async () => {
-          const N = 256, ruins = [];
+          const N = 512, ruins = [];
           const cv = document.createElement('canvas'); cv.width = cv.height = N;
           const cx = cv.getContext('2d', { willReadFrequently: true });
           const todos = Desenhos.todos();
@@ -340,7 +340,7 @@ def checar_vazamento(p, base):
             cx.fillStyle = '#fff'; cx.fillRect(0, 0, N, N); cx.drawImage(img, 0, 0, N, N);
             const px = cx.getImageData(0, 0, N, N).data;
             const bar = new Uint8Array(N * N);
-            for (let i = 0; i < N * N; i++) bar[i] = (255 - px[i * 4]) >= 200 ? 1 : 0;
+            for (let i = 0; i < N * N; i++) bar[i] = (255 - px[i * 4]) >= 230 ? 1 : 0;
             const lab = new Int32Array(N * N); let n = 0, maior = 0, minimas = 0, bg = 0;
             const pilha = [];
             for (let s = 0; s < N * N; s++) {

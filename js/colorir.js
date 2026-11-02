@@ -47,12 +47,15 @@
   }
 
   // ---------- galeria ----------
+  // miniatura: desenho de imagem usa o arquivo pequeno; os desenhados em código viram SVG
+  function miniaturaDe(d) { return d.mini || dataUrl(Desenhos.svgTexto(d, '#5a4e48')); }
+
   function construirGaleria() {
     var abas = $('col-abas');
     Desenhos.categorias.forEach(function (c) {
       var primeiro = Desenhos.daCategoria(c.id)[0];
       var b = botao('aba', c.nome,
-        '<img alt="" src="' + dataUrl(Desenhos.svgTexto(primeiro, '#5a4e48')) + '"><span>' + c.nome + '</span>', { 'data-cat': c.id });
+        '<img alt="" src="' + miniaturaDe(primeiro) + '"><span>' + c.nome + '</span>', { 'data-cat': c.id });
       abas.appendChild(b);
     });
     abas.addEventListener('click', function (ev) {
@@ -85,7 +88,7 @@
         if (!en.isIntersecting) return;
         var img = en.target.firstChild;
         var d = Desenhos.porId(en.target.getAttribute('data-id'));
-        img.src = dataUrl(Desenhos.svgTexto(d, '#5a4e48'));
+        img.src = miniaturaDe(d);
         observador.unobserve(en.target);
       });
     }, { root: grade, rootMargin: '300px' });
@@ -235,7 +238,7 @@
       ctxContorno.putImageData(dados, 0, 0);
       estado.pronto = true;
     };
-    img.src = dataUrl(Desenhos.svgTexto(d, '#000'));
+    img.src = d.url || dataUrl(Desenhos.svgTexto(d, '#000'));
   }
 
   // ---------- histórico (guarda só o retângulo que mudou) ----------

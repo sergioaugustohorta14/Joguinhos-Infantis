@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 tests/capturas/
 .claude/settings.local.json
+desenhos-novos/

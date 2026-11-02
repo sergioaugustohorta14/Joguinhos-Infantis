@@ -41,6 +41,12 @@ Projeto **particular** (não é da Sport Labs): três jogos calminhos (Colorir, 
 
 Ambiente: `python -m venv .venv`, depois `pip install playwright` e `playwright install chromium`. Para o shell: no Git Bash, evite `python - <<EOF` com muitas aspas e barras invertidas; grave um `.py` e rode. Barra invertida em strings pode virar caractere de controle (`\a`, `\v`).
 
+## Desenhos de imagem (qualidade de livro de colorir)
+- Os desenhos em código são simples; os bons vêm de imagens. `tools/importar_desenhos.py` lê `desenhos-novos/<categoria>/` (ignorada pelo Git), corta margens, centraliza em 1024x1024, deixa traço preto e papel branco, cria miniatura `-m.png`, regrava `desenhos/lista.js` e **sobe a VERSAO do `sw.js`**. Categorias: dinos, gatinhos, cachorrinhos, herois, unicornios, bichinhos, natureza, bobbie (Bobbie Goods, só aparece se tiver desenho).
+- No app: `motor.js` coloca os desenhos de imagem **antes** dos de código (`{id, cat, url, mini}`); `colorir.js` usa `d.mini` na galeria e `d.url` no editor (o contorno é extraído do mesmo jeito, `alfa = 255 - R`). O `sw.js` lê `desenhos/lista.js` com `importScripts` e guarda tudo para o modo sem internet.
+- Teste: `tests/test_imagens.py` (cópia temporária do projeto, não suja a pasta). Imagens de terceiros (marca d'água, banco de imagens) **não** vão para o repositório público.
+- O traço dos desenhos em código ficou fino (`SW0 = 6` em `motor.js`). O teste de vazamento do `test_fase2.py` roda em 512 px.
+
 ## Adicionar um desenho (base nova)
 - Em `js/desenhos/<categoria>.js`: `Desenhos.add({ id, cat, nome, cara:[x,y,escala], cabeca:[x,y,raio], corpo(){...} })`.
 - Tela de 1000x1000. O que fica na frente esconde o traço de trás (formas com preenchimento branco).
