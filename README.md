@@ -20,7 +20,9 @@ Feito com HTML, CSS e JavaScript puros, sem bibliotecas e sem etapa de compilaç
 ### Desviar
 1. Toque no Turbo (ouriço) ou no Bolinha (cãozinho bombeiro).
 2. **Deslize o dedo**: para os lados troca de pista, para cima pula, para baixo agacha. No computador: setas do teclado ou A, D, W, S.
+   Também vale um **toquinho** na tela: lado esquerdo vai para a esquerda, lado direito para a direita, meio pula. O deslize é curto de propósito (dedinho pequeno), e um pulo pedido um pouquinho antes de pousar não se perde.
 3. Desvie dos obstáculos e pegue as estrelas. São 3 vidas, e o recorde fica guardado no aparelho.
+4. A cada 20 segundos começa uma **fase nova**: o cenário muda devagar (Campinho, Praia, Neve, Noite e Doces, e depois recomeça), os obstáculos ganham outra cara, aparece uma fileira de estrelas e ganha 10 pontos.
 
 | Obstáculo | O que fazer |
 |---|---|
@@ -86,7 +88,7 @@ Para ver os desenhos a olho: `.\.venv\Scripts\python.exe tools\amostras.py saida
 **Adicionar uma base nova:** crie um `Desenhos.add({...})` no arquivo da categoria, com `corpo()` (as formas), `cara` (`[x, y, escala]` do rosto) e `cabeca` (`[x, y, raio]`, onde os acessórios se apoiam). Todo contorno deve ser fechado, senão a tinta do balde vaza. O teste `test_fase2.py` confere o vazamento de todos os desenhos. O total de desenhos é sempre 10 por base.
 
 ### Ajustar a dificuldade do Desviar
-No começo de `js/desviar.js` há um bloco com os números: velocidade inicial e máxima, quanto ela sobe por segundo, o tempo entre obstáculos, as vidas e o tempo sem perder vida depois de bater.
+No começo de `js/desviar.js` há um bloco com os números: velocidade inicial e máxima, quanto ela sobe por segundo, o tempo entre obstáculos, as vidas e o tempo sem perder vida depois de bater. Logo abaixo ficam as fases (duração, bônus) e o toque (deslize mínimo, toquinho ligado ou desligado). Os temas das fases estão na lista `TEMAS`.
 
 ## Publicar no GitHub Pages
 1. Envie o código para um repositório público (`git push`).

@@ -13,7 +13,8 @@
     ['#f2d2a9', 'Bege'], ['#9aa0a6', 'Cinza'], ['#2f2f33', 'Preto'], ['#ffffff', 'Branco']
   ];
   // espessuras (pequena, média, grande) em pixels da camada de 1024
-  var TAMANHOS = { lapis: [4, 8, 13], pincel: [18, 34, 58], borracha: [26, 52, 96] };
+  var TAMANHOS = { lapis: [6, 10, 15], pincel: [18, 34, 58], borracha: [26, 52, 96] };
+  var PALMA = 110;   // px (CSS): toque mais largo que isso é a palma da mão, não um dedo
   var FERRAMENTAS = [['lapis', 'Lápis'], ['pincel', 'Pincel'], ['borracha', 'Borracha'], ['balde', 'Balde de tinta']];
 
   var $ = function (id) { return document.getElementById(id); };
@@ -355,6 +356,8 @@
     var pg = el.pagina;
     pg.addEventListener('pointerdown', function (ev) {
       if (!estado.pronto || ativo !== null) return;
+      // palma da mão apoiada na tela (contato muito largo) não pinta
+      if (ev.pointerType === 'touch' && Math.max(ev.width || 0, ev.height || 0) > PALMA) return;
       ev.preventDefault();
       Som.liberar();
       try { pg.setPointerCapture(ev.pointerId); } catch (e) { /* ignora */ }
@@ -389,10 +392,10 @@
 
   // ---------- balde de tinta ----------
   // ponto livre (fora da linha) mais perto de p; null se não houver
-  function acharLivre(p) {
+  function acharLivre(p, maximo) {
     var x0 = Math.max(0, Math.min(N - 1, Math.round(p.x))), y0 = Math.max(0, Math.min(N - 1, Math.round(p.y)));
     if (!barreira[y0 * N + x0]) return [x0, y0];
-    for (var raio = 1; raio <= 14; raio++) {
+    for (var raio = 1; raio <= (maximo || 14); raio++) {
       for (var dy = -raio; dy <= raio; dy++) {
         for (var dx = -raio; dx <= raio; dx++) {
           if (Math.max(Math.abs(dx), Math.abs(dy)) !== raio) continue;
@@ -437,7 +440,7 @@
   }
 
   function preencher(p) {
-    var ini = acharLivre(p);
+    var ini = acharLivre(p, 30);   // dedinho que cai em cima do traço enche a região mais perto
     if (!ini) return;
     var bb = inundar(ini[0], ini[1]);
     var minX = bb[0], minY = bb[1], maxX = bb[2], maxY = bb[3];

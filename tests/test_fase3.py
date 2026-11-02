@@ -66,6 +66,17 @@ class Dedo:
             self.pag.mouse.up()
         self.pag.wait_for_timeout(60)
 
+    def toquinho(self, fx):
+        """Toque rápido, sem arrastar, a fx (0 a 1) da largura da tela."""
+        vp = self.pag.viewport_size
+        x, y = vp["width"] * fx, vp["height"] * 0.55
+        if self.toque:
+            self.cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x, "y": y}]})
+            self.cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        else:
+            self.pag.mouse.click(x, y)
+        self.pag.wait_for_timeout(80)
+
 
 def testar(p, base, nome, **ctx_args):
     print(f"\n== {nome} ==")
@@ -111,6 +122,8 @@ def testar(p, base, nome, **ctx_args):
     pag.evaluate(f"{T}.limpar(); {T}.congelar(true)")  # relógio parado: só avança com passo()
 
     dedo = Dedo(ctx, pag, toque)
+    # o toquinho (lados/meio da tela) é testado à parte; aqui só os deslizes, e o toque descartável do teste não pode mexer no jogo
+    pag.evaluate(f"{T}.toqueSimples(false)")
     # ---- gestos ----
     dedo.deslizar(-150, 0)
     confere(jg(pag, "j.faixa") == 0, "deslizar para a esquerda vai para a pista da esquerda")
@@ -167,6 +180,52 @@ def testar(p, base, nome, **ctx_args):
     passo(pag, 1.5)
     confere(jg(pag, "j.vidas") == 2, "logo depois de bater, não perde duas vidas seguidas")
     confere(jg(pag, "j.lento") > 0, "depois de bater, o jogo desacelera um pouco")
+
+    # ---- sensibilidade: toquinho e deslize curto ----
+    pag.evaluate(f"{T}.limpar(); {T}.jogo().invul = 0; {T}.jogo().faixa = 1; {T}.jogo().xl = 1; {T}.jogo().pulo = -1; {T}.jogo().agacha = 0; {T}.toqueSimples(true)")
+    dedo.toquinho(0.1)
+    confere(jg(pag, "j.faixa") == 0, "toquinho no lado esquerdo vai para a esquerda")
+    dedo.toquinho(0.9)
+    dedo.toquinho(0.9)
+    confere(jg(pag, "j.faixa") == 2, "toquinho no lado direito vai para a direita")
+    dedo.toquinho(0.5)
+    confere(jg(pag, "j.pulo") >= 0, "toquinho no meio pula")
+    passo(pag, 1.0)
+    pag.evaluate(f"{T}.toqueSimples(false)")   # o toque descartável do teste (canto esquerdo) viraria um toquinho
+    dedo.deslizar(-40, 0)
+    confere(jg(pag, "j.faixa") == 1, "deslize curto (40px) já vale")
+    # pedido de pulo um pouco antes de pousar vale para o próximo pulo
+    pag.evaluate(f"{T}.limpar(); {T}.jogo().pulo = 0.6")
+    dedo.deslizar(0, -150)
+    confere(jg(pag, "j.fila") == 1, "pulo pedido um pouco antes de pousar fica guardado")
+    passo(pag, 0.4)
+    confere(jg(pag, "j.pulo") >= 0, "e acontece assim que pousa")
+    passo(pag, 1.0)
+
+    # ---- fases: cenário e obstáculos mudam, com bônus e aviso ----
+    c = pag.evaluate(f"{T}.constantes()")
+    pag.evaluate(f"{T}.limpar(); {T}.jogo().vidas = 3; {T}.jogo().invul = 0; {T}.jogo().faixa = 1; {T}.jogo().xl = 1")
+    pag.evaluate(f"{T}.irParaFase(0)")   # as provas anteriores já gastaram tempo de jogo: recomeça na fase 1
+    passo(pag, c["FASE_TRANSICAO"] + 0.3)
+    for n in range(1, 6):
+        antes = jg(pag, "j.pontos")
+        pag.evaluate(f"{T}.limpar(); {T}.irParaFase({n})")
+        passo(pag, 0.05)
+        confere(jg(pag, "j.fase") == n, f"chegou na fase {n + 1}")
+        confere(jg(pag, "j.pontos") >= antes + c["FASE_BONUS"], "fase nova dá bônus de pontos")
+        confere(pag.locator("#dv-fase").is_visible() and pag.locator("#dv-fase-n").text_content() == str(n + 1), "aviso de fase aparece")
+        confere(jg(pag, "j.estrelas.length") >= 6, "fileira de estrelas na entrada da fase")
+        confere(0 < jg(pag, "j.mix") < 1, "cenário começa a mudar devagar (não troca de uma vez)")
+        passo(pag, c["FASE_TRANSICAO"] + 0.3)
+        confere(jg(pag, "j.mix") == 1 and jg(pag, "j.temaPara") == n % pag.evaluate(f"{T}.temas()"), "cenário terminou de mudar")
+        pag.evaluate(f"{T}.limpar(); {T}.jogo().vidas = 3; {T}.jogo().invul = 0")
+        pag.evaluate(f"{T}.itemNovo('pedra', 0, 12); {T}.itemNovo('alta', 2, 9.5); {T}.itemNovo('bloco', 1, 7); {T}.itemNovo('pedra', 2, 14); {T}.estrelaNova(0, 8); {T}.estrelaNova(0, 9.5)")
+        pag.evaluate(f"{T}.desenhar()")
+        pag.screenshot(path=str(CAPTURAS / f"{nome}-desviar-fase{n + 1}.png"))
+        pag.evaluate(f"{T}.limpar()")
+    confere(jg(pag, "j.temaPara") == 0, "depois da última fase, volta ao primeiro cenário")
+    pag.evaluate(f"{T}.irParaFase(0)")
+    passo(pag, 0.05)
 
     # ---- estrelas e pontos ----
     pag.evaluate(f"{T}.limpar(); {T}.jogo().pontos = 0; {T}.jogo().invul = 0;")

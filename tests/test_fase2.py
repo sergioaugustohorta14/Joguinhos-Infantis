@@ -184,6 +184,20 @@ def testar(p, base, nome, **ctx_args):
     ator.arrasta([(800, 80), (900, 140), (820, 200)])
     confere(pag.evaluate(JS_ALFA) > antes, "lápis pinta")
 
+    if toque:
+        # palma da mão apoiada (contato largo) não pinta; o dedo logo depois pinta normalmente
+        antes = pag.evaluate(JS_ALFA)
+        px, py = ator.tela(400, 700)
+        ator.cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": px, "y": py, "radiusX": 80, "radiusY": 80}]})
+        ator.cdp.send("Input.dispatchTouchEvent", {"type": "touchMove", "touchPoints": [{"x": px + 30, "y": py + 10, "radiusX": 80, "radiusY": 80}]})
+        ator.cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        ator.cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 2, "y": 2}]})
+        ator.cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        pag.wait_for_timeout(200)
+        confere(pag.evaluate(JS_ALFA) == antes, "palma da mão apoiada na tela não pinta")
+        ator.arrasta([(400, 700), (480, 740)])
+        confere(pag.evaluate(JS_ALFA) > antes, "dedo normal pinta logo depois")
+
     # ---- pintar só dentro das linhas (padrão) ----
     botao(pag, "#ed-limpar", toque)
     confere(pag.locator("#ed-dentro").get_attribute("aria-pressed") == "true", "'dentro das linhas' vem ligado")

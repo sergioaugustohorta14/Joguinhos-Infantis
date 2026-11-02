@@ -82,6 +82,9 @@
   place-items: center;
   color: var(--tinta);
 }
+/* área de toque um pouco maior que o desenho do botão (dedinho que pega na borda também acerta) */
+.btn-ed, .cor { position: relative; }
+.btn-ed::after, .cor::after { content: ''; position: absolute; inset: -3px; }
 .btn-ed:active:not(:disabled) { background: var(--botao-ativo); transform: scale(0.96); }
 .btn-ed:disabled { opacity: 0.35; }
 .btn-ed.sel { background: #f7e6ae; box-shadow: inset 0 0 0 3px #d9a93a; }
