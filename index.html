@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="css/style.css">
   <link rel="stylesheet" href="css/colorir.css">
   <link rel="stylesheet" href="css/desviar.css">
+  <link rel="stylesheet" href="css/bolinhas.css">
 </head>
 <body>
   <main id="app">
@@ -50,6 +51,22 @@
             <path d="M55 72 q5 5 10 0" fill="none" stroke="#4d5f6b" stroke-width="3.5" stroke-linecap="round"/>
           </svg>
           <span class="cartao-nome">Desviar</span>
+        </button>
+
+        <button class="cartao cartao-bolinhas" type="button" data-ir="bolinhas" aria-label="Bolinhas">
+          <svg viewBox="0 0 120 120" class="cartao-ico" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="#e4efdc"/>
+            <rect x="14" y="42" width="92" height="40" rx="20" fill="#f7f5ef" stroke="#6b5b53" stroke-width="5"/>
+            <rect x="34" y="55" width="52" height="14" rx="7" fill="#d8d3c7"/>
+            <circle cx="30" cy="62" r="9" fill="#e45b5b" stroke="#b53f3f" stroke-width="3"/>
+            <circle cx="60" cy="48" r="9" fill="#4d7fe3" stroke="#3159b3" stroke-width="3"/>
+            <circle cx="90" cy="62" r="9" fill="#f4d35e" stroke="#c9a73a" stroke-width="3"/>
+            <circle cx="60" cy="76" r="9" fill="#6cc57c" stroke="#44985a" stroke-width="3"/>
+            <circle cx="60" cy="20" r="8" fill="#f5a3c7" stroke="#d27ba0" stroke-width="3"/>
+            <circle cx="46" cy="98" r="8" fill="#9a6fe0" stroke="#7448b8" stroke-width="3"/>
+            <circle cx="74" cy="98" r="8" fill="#6fd8e0" stroke="#46aeb8" stroke-width="3"/>
+          </svg>
+          <span class="cartao-nome">Bolinhas</span>
         </button>
       </div>
     </section>
@@ -141,6 +158,38 @@
       </div>
     </section>
 
+    <!-- BOLINHAS -->
+    <section id="tela-bolinhas" class="tela" aria-label="Bolinhas" hidden>
+      <canvas id="cv-bolinhas"></canvas>
+
+      <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div class="bo-hud"><div class="bo-nivel">Nível <b id="bo-n">1</b></div></div>
+
+      <button id="bo-reiniciar" class="btn-canto" type="button" aria-label="Recomeçar a fase">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M38 24a14 14 0 1 1-5-10.7M33 6v9h9" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div id="bo-fim" class="dv-camada" hidden>
+        <div class="dv-painel">
+          <h2 id="bo-titulo">Muito bem!</h2>
+          <p id="bo-msg" class="dv-pequeno"></p>
+          <div class="dv-botoes">
+            <button id="bo-denovo" class="btn-ed dv-btn" type="button" aria-label="Jogar este nível de novo">
+              <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M38 24a14 14 0 1 1-5-10.7M33 6v9h9" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <button id="bo-proximo" class="btn-ed dv-btn" type="button" aria-label="Próximo nível">
+              <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M8 24h32M26 10l14 14-14 14" fill="none" stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <script src="js/som.js"></script>
@@ -155,6 +204,7 @@
   <script src="js/desenhos/unicornios.js"></script>
   <script src="js/colorir.js"></script>
   <script src="js/desviar.js"></script>
+  <script src="js/bolinhas.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

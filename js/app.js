@@ -2,7 +2,7 @@
 (function () {
   'use strict';
 
-  var TELAS = ['menu', 'colorir', 'desviar'];
+  var TELAS = ['menu', 'colorir', 'desviar', 'bolinhas'];
   var atual = null;
 
   // Cada jogo se registra aqui e recebe entrar()/sair() quando a tela abre/fecha.

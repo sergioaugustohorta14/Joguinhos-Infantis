@@ -3,7 +3,8 @@
 Dois jogos calminhos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
 
 - **Colorir**: 560 desenhos de contorno para pintar, com lápis, pincel, borracha e balde de tinta.
-- **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo.
+- **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo, em 5 fases com cenários diferentes.
+- **Bolinhas**: quebra-cabeça de ordenar bolinhas por cor numa esteira, com níveis que vão ficando mais difíceis.
 
 Funciona sem internet depois da primeira abertura (PWA). **Não coleta nenhum dado**: sem conta, sem anúncios, sem rastreadores. Só guarda no próprio aparelho o recorde, a preferência de som e a opção de pintar dentro das linhas.
 
@@ -34,6 +35,12 @@ Feito com HTML, CSS e JavaScript puros, sem bibliotecas e sem etapa de compilaç
 
 Nenhuma fileira de obstáculos fecha todas as saídas.
 
+### Bolinhas
+1. Toque numa coluna de blocos: o bloco da frente (o que mostra as bolinhas) solta 9 bolinhas, que sobem na esteira.
+2. Quando uma bolinha passa na frente de uma bandeja da **mesma cor**, ela cai num dos 3 buracos. Bandeja cheia sai e a próxima da fila vem (as cinzas com "?" só mostram a cor quando chegam na frente).
+3. Esvazie todas as filas para passar de nível. Se a esteira encher de bolinhas que nenhuma bandeja quer, a fase acaba: toque em tentar de novo (ou no botão de recomeçar, no alto).
+4. Dica: solte primeiro os blocos das cores que estão na frente das filas. Todo nível tem solução, e o nível em que você parou fica guardado no aparelho.
+
 ## Instalar no Android
 1. Abra o endereço do jogo no Chrome, com internet.
 2. Toque em Colorir e abra um desenho, para o aparelho guardar tudo.
@@ -57,7 +64,8 @@ python -m venv .venv
 ```powershell
 .\.venv\Scripts\python.exe tests\test_fase1.py      # menu, navegação, som e offline
 .\.venv\Scripts\python.exe tests\test_fase2.py      # Colorir: 560 desenhos, balde sem vazar, desfazer, salvar (uns 2 min)
-.\.venv\Scripts\python.exe tests\test_fase3.py      # Desviar: gestos, obstáculos, vidas, recorde, fim de jogo
+.\.venv\Scripts\python.exe tests\test_fase3.py      # Desviar: gestos, fases, obstáculos, vidas, recorde, fim de jogo
+.\.venv\Scripts\python.exe tests\test_bolinhas.py   # Bolinhas: níveis com solução, toque, vitória e derrota
 ```
 
 Os testes rodam em celular em pé e deitado, tablet Android e PC, e guardam capturas de tela em `tests/capturas/` (pasta não versionada).
@@ -65,15 +73,16 @@ Os testes rodam em celular em pé e deitado, tablet Android e PC, e guardam capt
 ### Estrutura
 
 ```
-index.html            as três telas (menu, Colorir, Desviar)
+index.html            as telas (menu, Colorir, Desviar, Bolinhas)
 manifest.webmanifest  dados do app instalável
 sw.js                 funcionamento sem internet (rede primeiro, cache de reserva)
-css/                  style.css (base e menu), colorir.css, desviar.css
+css/                  style.css (base e menu), colorir.css, desviar.css, bolinhas.css
 js/app.js             navegação entre telas, botão de som, registro do sw.js
 js/som.js             sons gerados no código (Web Audio), sem arquivos de áudio
 js/icones.js          ícones dos botões
 js/colorir.js         galeria e editor de pintura
 js/desviar.js         jogo de corrida
+js/bolinhas.js        jogo de ordenar bolinhas na esteira
 js/desenhos/          os 560 desenhos (56 bases + variações)
 icons/                ícone do app
 tools/                servidor local, gerador de ícones, folha de amostras dos desenhos

@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v8';
+var VERSAO = 'joguinhos-v9';
 
 var ARQUIVOS = [
   './',
@@ -9,11 +9,13 @@ var ARQUIVOS = [
   'css/style.css',
   'css/colorir.css',
   'css/desviar.css',
+  'css/bolinhas.css',
   'js/som.js',
   'js/app.js',
   'js/icones.js',
   'js/colorir.js',
   'js/desviar.js',
+  'js/bolinhas.js',
   'js/desenhos/motor.js',
   'js/desenhos/dinos.js',
   'js/desenhos/gatos.js',
