@@ -5,7 +5,7 @@ description: Guia do projeto Joguinhos (PWA com os jogos Colorir e Desviar para 
 
 # Joguinhos: guia do projeto
 
-Projeto **particular** (não é da Sport Labs): três jogos calminhos (Colorir, Desviar e Bolinhas) para crianças de 5 e 6 anos, para celular e tablet Android e PC. Roda no navegador, funciona offline (PWA) e é publicado no GitHub Pages. Repositório pode ser público: **nunca colocar dados pessoais, de crianças ou da clínica no código, nos commits ou nos desenhos.**
+Projeto **particular** (não é da Sport Labs): quatro jogos (Colorir, Desviar, Bolinhas e Basquete) para crianças de 5 e 6 anos, para celular e tablet Android e PC. Roda no navegador, funciona offline (PWA) e é publicado no GitHub Pages. Repositório pode ser público: **nunca colocar dados pessoais, de crianças ou da clínica no código, nos commits ou nos desenhos.**
 
 ## Regras de trabalho com o dono do projeto
 - Sempre em **português do Brasil**, inclusive comentários, mensagens de commit e textos do jogo.
@@ -25,12 +25,13 @@ Projeto **particular** (não é da Sport Labs): três jogos calminhos (Colorir, 
 | `js/icones.js` | ícones SVG dos botões do editor |
 | `js/colorir.js` | galeria + editor: duas camadas, histórico por retângulo, balde, "pintar dentro das linhas", salvar PNG |
 | `js/desviar.js` | corrida em perspectiva; constantes de dificuldade no topo |
+| `js/basquete.js` | arremessos de basquete: física, chuá/fogo/elétrico, estrelas, desafios do dia, vestiário, conquistas |
 | `js/bolinhas.js` | jogo da esteira: geração dos níveis, simulação, desenho; constantes no topo |
 | `js/desenhos/motor.js` | formas, rosto, acessórios, cenários e as 9 variações por base |
 | `js/desenhos/*.js` | as 56 bases por categoria (dinos 9, gatos 7, cães 7, heróis 6, unicórnios 6, bichinhos 12, natureza 9) |
 | `sw.js` | rede primeiro, cache de reserva; lista `ARQUIVOS` e `VERSAO` |
 | `tools/` | `servir.py` (servidor com threads), `amostras.py` (folha de desenhos), `gerar_icones.py` |
-| `tests/` | `test_fase1.py` (menu/offline), `test_fase2.py` (Colorir), `test_fase3.py` (Desviar), `test_bolinhas.py` (Bolinhas) |
+| `tests/` | `test_fase1.py` (menu/offline), `test_fase2.py` (Colorir), `test_fase3.py` (Desviar), `test_bolinhas.py` (Bolinhas), `test_basquete.py` (Basquete) |
 
 ## Rotina de toda alteração
 1. Editar o código.
@@ -58,6 +59,14 @@ Ambiente: `python -m venv .venv`, depois `pip install playwright` e `playwright 
 
 ## Ajustar o Desviar
 Constantes no começo de `js/desviar.js`: `VEL_INICIAL`, `VEL_MAXIMA`, `VEL_SOBE`, `ENTRE_LINHAS_INICIO/FIM`, `INVULNERAVEL`, `VIDAS`. Obstáculos: pedra (pular/desviar), alta (agachar), bloco (só desviar), `baixaTodas` (pular), `altaTodas` (agachar). A geração garante que nenhuma linha fecha as 3 pistas. **Fases:** `FASE_TEMPO` (20 s), `FASE_TRANSICAO`, `FASE_BONUS` e a lista `TEMAS` (5 temas: cores do cenário misturadas devagar, tipos de cenário, forma e cor dos obstáculos, que ficam com o tema em que nasceram via `skin`). Para uma fase nova, acrescente um item em `TEMAS` (e, se precisar de forma nova, um `case` em `pedraDaFase`/`desenharCenario`). **Toque:** `TOQUE_SIMPLES` (toquinho: esquerda/direita/meio), `limiar()` (deslize curto), `FILA_PULO`; os testes desligam o toquinho com `_teste.toqueSimples(false)` antes de usar o toque descartável no canto (2,2), que senão viraria um toquinho. No Colorir, `PALMA` ignora toque largo (palma da mão) e o balde procura a região até 30 px do traço. Para os testes há ganchos em `Jogos.desviar._teste` (`congelar`, `passo`, `itemNovo`, `estrelaNova`, `limpar`).
+
+## Ajustar o Basquete
+- Inspirado em jogos de arremesso contra o relógio (nome e visual próprios, sem a marca de nenhum jogo). Constantes no topo de `js/basquete.js`: gravidade `G`, `K_PUXAR` (força), `PUXAR_MAX`, `ARO_LARG` (abertura do aro, generosa), `TEMPOS`, `FOGO_SEQ`, `ELETRICO_SEQ`.
+- Mundo de 540 de largura (no máximo 640) escalado e centralizado; em tela larga o jogo fica numa coluna no meio. O placar é desenhado em pixels da tela.
+- Pontos: cesta 1, chuá 2; vezes 2 no fogo e vezes 3 no elétrico. Tempo extra (só Contra o relógio): cesta +2 s, chuá +3 s, fogo +1, elétrico +2. Estrelas ao fim: cestas + chuás + 5 se bater o recorde; desafio do dia +20; conquista +25.
+- A bola nova e o aro novo só aparecem depois que a bola anterior se resolve (o aro não muda de lugar com a bola no ar). Depois de 15 pontos o aro passa a balançar um pouco.
+- Dados salvos em `localStorage` (`joguinhos.basquete`): estrelas, recordes e 5 melhores, vestiário, conquistas, desafios do dia (sorteados pela data). Sem ranking online e sem anúncios, de propósito (nenhum dado sai do aparelho).
+- Teste: `test_basquete.py` usa `_teste.mirar()` (velocidade que passa pelo centro do aro, com arco alto: arcos baixos batem no aro na subida), `lancar`, `avancar`.
 
 ## Ajustar o Bolinhas
 - Inspirado em jogos do tipo "Marble Sort": blocos no quadro soltam 9 bolinhas numa esteira em oval; bandejas de 3 buracos em 3 ou 4 filas pegam as bolinhas da mesma cor que passam na frente delas.

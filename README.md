@@ -1,10 +1,11 @@
 # Joguinhos
 
-Dois jogos calminhos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
+Quatro jogos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
 
 - **Colorir**: 560 desenhos de contorno feitos em código (mais os que você importar de imagens, ver `desenhos/LEIA-ME.md`) para pintar, com lápis, pincel, borracha e balde de tinta.
 - **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo, em 5 fases com cenários diferentes.
 - **Bolinhas**: quebra-cabeça de ordenar bolinhas por cor numa esteira, com níveis que vão ficando mais difíceis.
+- **Basquete**: arremessos contra o relógio, com chuá, sequências, estrelas, desafios do dia, vestiário e conquistas.
 
 Funciona sem internet depois da primeira abertura (PWA). **Não coleta nenhum dado**: sem conta, sem anúncios, sem rastreadores. Só guarda no próprio aparelho o recorde, a preferência de som e a opção de pintar dentro das linhas.
 
@@ -41,6 +42,13 @@ Nenhuma fileira de obstáculos fecha todas as saídas.
 3. Esvazie todas as filas para passar de nível. Se a esteira encher de bolinhas que nenhuma bandeja quer, a fase acaba: toque em tentar de novo (ou no botão de recomeçar, no alto).
 4. Dica: solte primeiro os blocos das cores que estão na frente das filas. Todo nível tem solução, e o nível em que você parou fica guardado no aparelho.
 
+### Basquete
+1. Escolha **Contra o relógio** (15 s, cada cesta dá tempo extra) ou **Um minuto** (60 s, sem tempo extra). O relógio só começa a correr no primeiro arremesso.
+2. **Arraste o dedo para trás** (para baixo): aparece uma linha pontilhada mostrando o caminho da bola. **Solte** para arremessar. Um toque sem arrastar não arremessa.
+3. Cesta vale 1 ponto; **chuá** (sem encostar no aro) vale 2 e dá mais tempo. 5 cestas seguidas ativam o **Pegando fogo** (pontos x2) e 3 chuás seguidos o **Elétrico** (pontos x3). Errar zera a sequência.
+4. Ao fim, as cestas e os chuás viram **estrelas**, usadas no **Vestiário** (bolas e quadras). Há 3 **desafios do dia**, **conquistas** e a lista dos 5 melhores **recordes** de cada modo.
+5. Tudo fica só no aparelho (sem conta, sem ranking online, sem anúncios).
+
 ## Instalar no Android
 1. Abra o endereço do jogo no Chrome, com internet.
 2. Toque em Colorir e abra um desenho, para o aparelho guardar tudo.
@@ -66,6 +74,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe tests\test_fase2.py      # Colorir: 560 desenhos, balde sem vazar, desfazer, salvar (uns 2 min)
 .\.venv\Scripts\python.exe tests\test_fase3.py      # Desviar: gestos, fases, obstáculos, vidas, recorde, fim de jogo
 .\.venv\Scripts\python.exe tests\test_bolinhas.py   # Bolinhas: níveis com solução, toque, vitória e derrota
+.\.venv\Scripts\python.exe tests\test_basquete.py   # Basquete: arremesso, chuá, sequências, tempo, estrelas, vestiário
 ```
 
 Os testes rodam em celular em pé e deitado, tablet Android e PC, e guardam capturas de tela em `tests/capturas/` (pasta não versionada).
@@ -73,16 +82,17 @@ Os testes rodam em celular em pé e deitado, tablet Android e PC, e guardam capt
 ### Estrutura
 
 ```
-index.html            as telas (menu, Colorir, Desviar, Bolinhas)
+index.html            as telas (menu, Colorir, Desviar, Bolinhas, Basquete)
 manifest.webmanifest  dados do app instalável
 sw.js                 funcionamento sem internet (rede primeiro, cache de reserva)
-css/                  style.css (base e menu), colorir.css, desviar.css, bolinhas.css
+css/                  style.css (base e menu), colorir.css, desviar.css, bolinhas.css, basquete.css
 js/app.js             navegação entre telas, botão de som, registro do sw.js
 js/som.js             sons gerados no código (Web Audio), sem arquivos de áudio
 js/icones.js          ícones dos botões
 js/colorir.js         galeria e editor de pintura
 js/desviar.js         jogo de corrida
 js/bolinhas.js        jogo de ordenar bolinhas na esteira
+js/basquete.js        jogo de arremessos de basquete
 js/desenhos/          os 560 desenhos (56 bases + variações)
 icons/                ícone do app
 tools/                servidor local, gerador de ícones, folha de amostras dos desenhos

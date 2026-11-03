@@ -49,6 +49,12 @@
     bloco:   function () { nota(392, 0, 0.1, 0.08); nota(494, 0.05, 0.14, 0.08); },
     bola:    function () { nota(620 + Math.random() * 260, 0, 0.07, 0.06); },
     bandeja: function () { nota(784, 0, 0.1, 0.08); nota(988, 0.08, 0.18, 0.08); },
+    arremesso: function () { nota(330, 0, 0.08, 0.05, 'triangle'); nota(440, 0.05, 0.1, 0.05, 'triangle'); },
+    aro:     function () { nota(190, 0, 0.14, 0.09, 'triangle'); },
+    quique:  function () { nota(150, 0, 0.08, 0.07, 'triangle'); },
+    cesta:   function () { nota(660, 0, 0.1, 0.09); nota(880, 0.07, 0.16, 0.09); },
+    chua:    function () { nota(784, 0, 0.09, 0.09); nota(988, 0.07, 0.09, 0.09); nota(1319, 0.14, 0.26, 0.09); },
+    eletrico: function () { nota(1047, 0, 0.08, 0.08); nota(1319, 0.06, 0.08, 0.08); nota(1568, 0.12, 0.08, 0.08); nota(2093, 0.18, 0.3, 0.08); },
     lado:    function () { nota(440, 0, 0.07, 0.07); nota(500, 0.04, 0.09, 0.06); },
     recorde: function () { nota(523, 0, 0.18, 0.1); nota(659, 0.16, 0.18, 0.1); nota(784, 0.32, 0.4, 0.1); },
     fim:     function () { nota(392, 0, 0.3, 0.1); nota(330, 0.25, 0.3, 0.1); nota(262, 0.5, 0.5, 0.1); }

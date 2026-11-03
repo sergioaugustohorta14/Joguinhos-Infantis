@@ -14,6 +14,7 @@
   <link rel="stylesheet" href="css/colorir.css">
   <link rel="stylesheet" href="css/desviar.css">
   <link rel="stylesheet" href="css/bolinhas.css">
+  <link rel="stylesheet" href="css/basquete.css">
 </head>
 <body>
   <main id="app">
@@ -67,6 +68,18 @@
             <circle cx="74" cy="98" r="8" fill="#6fd8e0" stroke="#46aeb8" stroke-width="3"/>
           </svg>
           <span class="cartao-nome">Bolinhas</span>
+        </button>
+
+        <button class="cartao cartao-basquete" type="button" data-ir="basquete" aria-label="Basquete">
+          <svg viewBox="0 0 120 120" class="cartao-ico" aria-hidden="true">
+            <circle cx="60" cy="60" r="52" fill="#fbe9d2"/>
+            <circle cx="52" cy="70" r="26" fill="#e8812e" stroke="#3a1f10" stroke-width="4"/>
+            <path d="M26 70h52M52 44v52M34 52q18 18 0 36M70 52q-18 18 0 36" fill="none" stroke="#3a1f10" stroke-width="3.4" stroke-linecap="round"/>
+            <path d="M82 30h24v8H82z" fill="#d9d4cc" stroke="#6b5b53" stroke-width="3"/>
+            <path d="M80 44h22" stroke="#ef6a1f" stroke-width="6" stroke-linecap="round"/>
+            <path d="M82 46l5 14M92 46v14M102 46l-5 14" stroke="#6b5b53" stroke-width="2.6" stroke-linecap="round"/>
+          </svg>
+          <span class="cartao-nome">Basquete</span>
         </button>
       </div>
     </section>
@@ -190,6 +203,74 @@
       </div>
     </section>
 
+    <!-- BASQUETE -->
+    <section id="tela-basquete" class="tela" aria-label="Basquete" hidden>
+      <canvas id="cv-basquete"></canvas>
+
+      <button class="btn-canto btn-voltar" type="button" data-ir="menu" aria-label="Voltar para o início">
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true">
+          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
+        </svg>
+      </button>
+
+      <div id="bk-menu" class="bk-camada">
+        <div class="bk-topo"><span class="bk-pilula">&#9733; <b id="bk-estrelas">0</b></span></div>
+        <h1 class="bk-titulo">Basquete</h1>
+        <button id="bk-modo-relogio" class="bk-modo bk-laranja" type="button">
+          <b>Contra o relógio</b>
+          <span class="bk-rec">Recorde<b id="bk-rec-relogio">0</b></span>
+          <small>Cada cesta dá mais tempo</small>
+        </button>
+        <button id="bk-modo-minuto" class="bk-modo bk-azul" type="button">
+          <b>Um minuto</b>
+          <span class="bk-rec">Recorde<b id="bk-rec-minuto">0</b></span>
+          <small>60 s, sem tempo extra</small>
+        </button>
+        <nav class="bk-abas" aria-label="Mais">
+          <button class="bk-aba" type="button" data-aba="desafios">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 6l5.4 12.6 13.6 1.2-10.3 9 3.1 13.4L24 35l-11.8 7.2 3.1-13.4-10.3-9 13.6-1.2z"/></svg>
+            Desafios<span id="bk-notif-desafios" class="bk-notif" hidden>0</span>
+          </button>
+          <button class="bk-aba" type="button" data-aba="vestiario">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="17"/><path d="M7 24h34M24 7v34M12 12q12 12 0 24M36 12q-12 12 0 24"/></svg>
+            Vestiário
+          </button>
+          <button class="bk-aba" type="button" data-aba="recordes">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M14 8h20v10a10 10 0 0 1-20 0zM14 12H7q0 9 7 10M34 12h7q0 9-7 10M24 28v8M16 40h16"/></svg>
+            Recordes
+          </button>
+          <button class="bk-aba" type="button" data-aba="conquistas">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="19" r="11"/><path d="M17 29l-4 14 11-6 11 6-4-14"/></svg>
+            Conquistas
+          </button>
+        </nav>
+      </div>
+
+      <div id="bk-painel" class="bk-camada" hidden>
+        <h2 id="bk-painel-titulo"></h2>
+        <div id="bk-painel-corpo"></div>
+        <button id="bk-painel-voltar" class="bk-voltar-painel" type="button">Voltar</button>
+      </div>
+
+      <div id="bk-fim" class="bk-camada" hidden>
+        <p id="bk-fim-modo" class="bk-fim-modo"></p>
+        <h2>Fim de tempo!</h2>
+        <div id="bk-fim-pontos" class="bk-fim-pontos">0</div>
+        <p id="bk-fim-rec" class="bk-fim-rec"></p>
+        <p id="bk-fim-estrelas" class="bk-fim-estrelas"></p>
+        <p id="bk-fim-detalhe" class="bk-fim-detalhe"></p>
+        <p id="bk-fim-novas" class="bk-fim-novas"></p>
+        <div class="bk-fim-botoes">
+          <button id="bk-fim-menu" type="button" aria-label="Voltar ao menu do Basquete">
+            <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round"/></svg>
+          </button>
+          <button id="bk-denovo" type="button">De novo</button>
+        </div>
+      </div>
+
+      <div id="bk-aviso" class="bk-aviso" hidden role="status"></div>
+    </section>
+
   </main>
 
   <script src="js/som.js"></script>
@@ -206,6 +287,7 @@
   <script src="js/colorir.js"></script>
   <script src="js/desviar.js"></script>
   <script src="js/bolinhas.js"></script>
+  <script src="js/basquete.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>

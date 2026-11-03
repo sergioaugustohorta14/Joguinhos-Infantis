@@ -6,6 +6,7 @@
   --cartao-colorir: #fbe3d6;
   --cartao-desviar: #d9e9f2;
   --cartao-bolinhas: #e4efdc;
+  --cartao-basquete: #fbe9d2;
   --borda: #6b5b53;
   --botao: #fffaf0;
   --botao-ativo: #efe6d2;
@@ -79,18 +80,19 @@ button {
 }
 
 .menu-cartoes {
-  display: flex;
-  gap: clamp(20px, 5vmin, 56px);
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(4, max-content);
+  gap: clamp(14px, 3vmin, 32px);
+  align-content: center;
   justify-content: center;
   width: 100%;
-  padding: 0 clamp(16px, 4vmin, 48px);
+  height: 100%;
+  padding: calc(var(--alvo-min) + 28px) clamp(12px, 3vmin, 32px) 16px;
 }
 
 .cartao {
-  flex: 0 1 min(28vw, 52vh);
+  width: min(21vw, 46vh);
   aspect-ratio: 1 / 1.1;
-  max-width: 340px;
   background: var(--cartao-colorir);
   border: 5px solid var(--borda);
   border-radius: 40px;
@@ -104,15 +106,15 @@ button {
 }
 .cartao-desviar { background: var(--cartao-desviar); }
 .cartao-bolinhas { background: var(--cartao-bolinhas); }
+.cartao-basquete { background: var(--cartao-basquete); }
 .cartao:active { transform: translateY(6px); box-shadow: 0 2px 0 rgba(107, 91, 83, 0.25); }
 .cartao-ico { width: 78%; flex: 1 1 auto; min-height: 0; }
 .cartao-nome { font-size: clamp(26px, 5.5vmin, 44px); font-weight: 700; letter-spacing: 0.02em; }
 
-/* retrato em celular: cartões empilhados */
+/* retrato em celular: 2 colunas x 2 linhas (o espaço de cima mantém os cartões longe do botão de som) */
 @media (orientation: portrait) {
-  /* o espaço de cima mantém os cartões longe do botão de som */
-  .menu-cartoes { flex-direction: column; gap: 18px; padding-top: calc(var(--alvo-min) + 24px); }
-  .cartao { flex: 0 1 auto; width: min(60vw, 21vh); max-width: none; padding: 12px 10px 10px; border-radius: 34px; }
+  .menu-cartoes { grid-template-columns: repeat(2, max-content); }
+  .cartao { width: min(42vw, 29vh); padding: 12px 10px 10px; border-radius: 34px; }
 }
 
 /* telas provisórias (substituídas nas próximas fases) */
