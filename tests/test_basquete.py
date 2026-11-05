@@ -80,7 +80,7 @@ def testar(p, base, nome, **ctx_args):
     pag.screenshot(path=str(CAPTURAS / f"{nome}-basquete-desafios.png"))
     tocar("#bk-painel-voltar")
 
-    confere("Arremessos por tempo" in pag.locator("#bk-modo-minuto").text_content(), "o segundo modo se chama Arremessos por tempo")
+    confere("Por tempo" in pag.locator("#bk-modo-minuto").text_content(), "o segundo modo se chama Por tempo")
 
     # ---- começar: contra o relógio ----
     tocar("#bk-modo-relogio")
@@ -178,7 +178,7 @@ def testar(p, base, nome, **ctx_args):
     # ---- arremesso com o dedo de verdade: arrastar para trás e soltar ----
     tocar("#bk-modo-minuto")
     pag.evaluate(f"{T}.congelar(true)")
-    confere(abs(ev(pag, "j.tempo") - 90) < 0.01, "Arremessos por tempo começa com 90 segundos")
+    confere(abs(ev(pag, "j.tempo") - 90) < 0.01, "Por tempo começa com 90 segundos")
     vp = pag.viewport_size
     x0, y0 = vp["width"] * 0.5, vp["height"] * 0.7
     if toque:

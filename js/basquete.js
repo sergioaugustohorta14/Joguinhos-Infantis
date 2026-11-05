@@ -18,7 +18,7 @@
   var REST_ARO = 0.6, REST_CHAO = 0.5;
   var FOGO_SEQ = 5, ELETRICO_SEQ = 3;
   var TEMPOS = { relogio: 30, minuto: 90 };
-  var NOMES_MODO = { relogio: 'Contra o relógio', minuto: 'Arremessos por tempo' };
+  var NOMES_MODO = { relogio: 'Contra o relógio', minuto: 'Por tempo' };
   var CHAVE = 'joguinhos.basquete';
   var VW = 540, VH = 900;          // mundo mínimo visível
 
