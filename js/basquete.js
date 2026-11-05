@@ -8,14 +8,17 @@
   // ---------- constantes ----------
   var G = 1450;                    // gravidade (unidades do mundo por s²)
   var R = 22;                      // raio da bola
-  var K_PUXAR = 9.2;               // velocidade = puxada x K
+  var K_PUXAR = 11.5;              // velocidade = puxada x K (maior = não precisa arrastar tanto)
   var PUXAR_MAX = 190;             // puxada máxima (mundo)
-  var PUXAR_MIN_PX = 14;           // puxada mínima em pixels da tela (menos que isso cancela)
+  var PUXAR_MIN_PX = 10;           // puxada mínima em pixels da tela (menos que isso cancela)
+  var ASSISTE_MIRA = 0.5;          // ajuda de mira: 0 desliga; 0.5 corrige metade do erro quando o tiro já está perto
+  var ASSISTE_ALCANCE = 170;       // até que erro de velocidade a ajuda atua
+  var PALMA_PX = 110;              // toque mais largo que isso é a palma da mão
   var ARO_LARG = 88;               // abertura do aro (bola = 44): generosa
   var REST_ARO = 0.6, REST_CHAO = 0.5;
   var FOGO_SEQ = 5, ELETRICO_SEQ = 3;
-  var TEMPOS = { relogio: 15, minuto: 60 };
-  var NOMES_MODO = { relogio: 'Contra o relógio', minuto: 'Um minuto' };
+  var TEMPOS = { relogio: 30, minuto: 90 };
+  var NOMES_MODO = { relogio: 'Contra o relógio', minuto: 'Arremessos por tempo' };
   var CHAVE = 'joguinhos.basquete';
   var VW = 540, VH = 900;          // mundo mínimo visível
 
@@ -198,7 +201,7 @@
       modo: modo, tempo: TEMPOS[modo], comecou: false, pontos: 0, seq: 0, chuaSeq: 0, cestas: 0, chuas: 0, maxSeq: 0,
       fogoUsou: false, eletricoUsou: false, bolas: [], pronta: null, espera: 0, puxando: null,
       aro: { y: 0, alvo: 0 }, rede: 0, particulas: [], textos: [], raio: 0, t: 0, fimPend: false, fimEm: 0,
-      estrelasDesafio: 0, tempoExtra: 0
+      estrelasDesafio: 0, tempoExtra: 0, moverAro: false
     };
     posicionarAro(true);
     criarPronta();
@@ -223,7 +226,8 @@
     j.bolas.push(b);
     j.pronta = null;
     j.comecou = true;
-    j.espera = 0.5;
+    j.espera = 0.3;
+    j.moverAro = true;
     som('arremesso');
     return true;
   }
@@ -329,9 +333,14 @@
     for (var s = 0; s < n; s++) j.bolas.forEach(function (b) { passoBola(b, dt / n); });
     j.bolas = j.bolas.filter(function (b) { return b.y < mh + 200 && b.idade < 4.5 && !(b.idade > 1.2 && (b.feita || b.errou) && Math.abs(b.vy) < 5 && b.y >= quicaY - 1); });
     // bola nova pronta
-    if (!j.pronta && !j.fimPend && !j.bolas.some(function (b) { return !b.feita && !b.errou && b.idade < 3; })) {
+    if (!j.pronta && !j.fimPend) {
       j.espera -= dt;
-      if (j.espera <= 0) { criarPronta(); posicionarAro(false); }
+      if (j.espera <= 0) criarPronta();      // a bola nova já fica pronta logo depois do tiro
+    }
+    // o aro só muda de lugar quando nenhuma bola está no ar (não muda no meio do arremesso)
+    if (j.moverAro && !j.fimPend && !j.bolas.some(function (b) { return !b.feita && !b.errou && b.idade < 3; })) {
+      j.moverAro = false;
+      posicionarAro(false);
     }
     if (j.fimPend) {
       j.fimEm += dt;
@@ -366,19 +375,36 @@
   }
 
   // ---------- desenho ----------
+  // clareia (k > 0) ou escurece (k < 0) uma cor '#rrggbb'
+  function tom(hex, k) {
+    var r = parseInt(hex.substr(1, 2), 16), g = parseInt(hex.substr(3, 2), 16), b = parseInt(hex.substr(5, 2), 16);
+    var alvo = k > 0 ? 255 : 0, a = Math.abs(k);
+    return 'rgb(' + Math.round(r + (alvo - r) * a) + ',' + Math.round(g + (alvo - g) * a) + ',' + Math.round(b + (alvo - b) * a) + ')';
+  }
+  function rr(c, x, y, w, h, r) { c.beginPath(); if (c.roundRect) c.roundRect(x, y, w, h, r); else c.rect(x, y, w, h); }
+
   function bolaDesenho(c, x, y, r, sk, rot) {
     c.save();
-    c.translate(x, y); c.rotate(rot || 0);
-    c.beginPath(); c.arc(0, 0, r, 0, 7); c.fillStyle = sk.cor; c.fill();
-    c.strokeStyle = sk.linha; c.lineWidth = Math.max(1.4, r * 0.09); c.lineCap = 'round';
+    c.translate(x, y);
+    var g = c.createRadialGradient(-r * 0.38, -r * 0.42, r * 0.08, 0, 0, r * 1.05);
+    g.addColorStop(0, tom(sk.cor, 0.38)); g.addColorStop(0.5, sk.cor); g.addColorStop(1, tom(sk.cor, -0.5));
+    c.beginPath(); c.arc(0, 0, r, 0, 7); c.fillStyle = g; c.fill();
+    c.save();
+    c.beginPath(); c.arc(0, 0, r, 0, 7); c.clip();
+    c.rotate(rot || 0);
+    c.fillStyle = 'rgba(0,0,0,0.13)';                 // textura de bola de couro
+    var passo = r * 0.3;
+    for (var j = -4; j <= 4; j++) for (var i = -4; i <= 4; i++) {
+      c.beginPath(); c.arc(i * passo + (j % 2 ? passo / 2 : 0), j * passo * 0.87, r * 0.045, 0, 7); c.fill();
+    }
+    c.strokeStyle = sk.linha; c.lineWidth = Math.max(1.6, r * 0.1); c.lineCap = 'round';
     c.beginPath(); c.moveTo(-r, 0); c.lineTo(r, 0); c.moveTo(0, -r); c.lineTo(0, r); c.stroke();
     c.beginPath(); c.arc(-r * 1.25, 0, r * 0.98, -0.85, 0.85); c.stroke();
     c.beginPath(); c.arc(r * 1.25, 0, r * 0.98, Math.PI - 0.85, Math.PI + 0.85); c.stroke();
-    c.beginPath(); c.arc(0, 0, r, 0, 7); c.stroke();
     c.restore();
-    var g = c.createRadialGradient(x - r * 0.4, y - r * 0.45, r * 0.1, x, y, r);
-    g.addColorStop(0, 'rgba(255,255,255,0.35)'); g.addColorStop(1, 'rgba(255,255,255,0)');
-    c.fillStyle = g; c.beginPath(); c.arc(x, y, r, 0, 7); c.fill();
+    c.beginPath(); c.arc(0, 0, r - 0.5, 0, 7); c.strokeStyle = tom(sk.cor, -0.62); c.lineWidth = Math.max(1.4, r * 0.07); c.stroke();
+    c.beginPath(); c.ellipse(-r * 0.36, -r * 0.46, r * 0.26, r * 0.14, -0.6, 0, 7); c.fillStyle = 'rgba(255,255,255,0.32)'; c.fill();
+    c.restore();
   }
 
   function desenharFundo() {
@@ -388,6 +414,11 @@
     ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     ctx.setTransform(dpr * escala, 0, 0, dpr * escala, dpr * ox, 0);
     var xa = -ox / escala, xb = (W - ox) / escala;   // da borda esquerda à direita da tela
+    // formas grandes e suaves ao fundo (arquibancada), dão profundidade
+    [[0.12, 0.62, 420, 250, -0.35], [0.95, 0.38, 340, 220, 0.5], [0.3, 0.2, 300, 180, 0.25], [0.8, 0.72, 380, 200, -0.2]].forEach(function (f) {
+      ctx.save(); ctx.translate(mw * f[0], mh * f[1]); ctx.rotate(f[4]);
+      ctx.fillStyle = 'rgba(255,255,255,0.028)'; rr(ctx, -f[2] / 2, -f[3] / 2, f[2], f[3], 60); ctx.fill(); ctx.restore();
+    });
     // painéis da parede
     ctx.strokeStyle = 'rgba(255,255,255,0.04)'; ctx.lineWidth = 2;
     for (var x = 0; x <= mw; x += 135) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, chaoY - 40); ctx.stroke(); }
@@ -409,35 +440,47 @@
   function desenharAro(frente) {
     var xs = aroXs(), ay = jg ? aroY() : 300, bx = xs[1] + 4, cx = (xs[0] + xs[1]) / 2, rx = ARO_LARG / 2;
     if (!frente) {
-      // tabela e braço
-      ctx.fillStyle = '#e9edf5'; ctx.fillRect(bx, ay - 100, 16, 130);
-      ctx.fillStyle = '#ff7a1f'; ctx.fillRect(bx, ay - 8, 16, 14);
-      ctx.strokeStyle = '#ff7a1f'; ctx.lineWidth = 6; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(xs[1], ay); ctx.lineTo(bx, ay); ctx.stroke();
-      // metade de trás do aro
+      // tabela de vidro (em perspectiva): reflexo, quadrado de mira e moldura
+      var gv = ctx.createLinearGradient(bx - 6, 0, bx + 26, 0);
+      gv.addColorStop(0, 'rgba(200,232,255,0.62)'); gv.addColorStop(1, 'rgba(110,160,210,0.32)');
+      ctx.beginPath(); ctx.moveTo(bx - 6, ay - 138); ctx.lineTo(bx + 26, ay - 172); ctx.lineTo(bx + 26, ay + 56); ctx.lineTo(bx - 6, ay + 20); ctx.closePath();
+      ctx.fillStyle = gv; ctx.fill();
+      ctx.lineJoin = 'round'; ctx.strokeStyle = 'rgba(235,248,255,0.85)'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx - 1, ay - 112); ctx.lineTo(bx + 14, ay - 128); ctx.lineTo(bx + 14, ay - 70); ctx.lineTo(bx - 1, ay - 58); ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,0.10)'; ctx.fill();
+      ctx.beginPath(); ctx.moveTo(bx - 1, ay - 54); ctx.lineTo(bx + 14, ay - 64); ctx.lineTo(bx + 14, ay + 2); ctx.lineTo(bx - 1, ay + 8); ctx.closePath();
+      ctx.strokeStyle = 'rgba(255,150,70,0.9)'; ctx.lineWidth = 3; ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(bx + 4, ay - 150); ctx.lineTo(bx + 20, ay - 168); ctx.lineTo(bx + 24, ay - 120); ctx.lineTo(bx + 8, ay - 98); ctx.closePath();
+      ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fill();
+      // suporte metálico e metade de trás do aro
+      ctx.strokeStyle = '#7d8896'; ctx.lineWidth = 9; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(xs[1] - 2, ay + 2); ctx.lineTo(bx + 2, ay + 2); ctx.stroke();
+      ctx.strokeStyle = '#ff8a2a'; ctx.lineWidth = 7;
       ctx.beginPath(); ctx.ellipse(cx, ay, rx, 10, 0, Math.PI, 0); ctx.stroke();
       return;
     }
     // rede (balança ao acertar) e metade da frente do aro
     var bal = Math.sin(jg.t * 22) * 9 * jg.rede;
-    ctx.strokeStyle = 'rgba(255,255,255,0.8)'; ctx.lineWidth = 2.2;
-    var n = 7, fundo = 64;
+    ctx.strokeStyle = 'rgba(255,255,255,0.88)'; ctx.lineWidth = 2.6; ctx.lineJoin = 'round';
+    var n = 8, fundo = 66;
     for (var i = 0; i <= n; i++) {
-      var f = i / n, ax = cx - rx + f * rx * 2, ex = cx + (f - 0.5) * rx * 1.0 + bal;
+      var f = i / n, ax = cx - rx + f * rx * 2, ex = cx + (f - 0.5) * rx * 0.72 + bal;
       ctx.beginPath(); ctx.moveTo(ax, ay + 4); ctx.lineTo(ex, ay + fundo); ctx.stroke();
     }
-    for (var k = 1; k <= 3; k++) {
-      var yy = ay + 4 + k * 18, ancho = rx * (1 - k * 0.1);
+    for (var k = 1; k <= 4; k++) {
+      var yy = ay + 4 + k * 15, ancho = rx * (1 - k * 0.07);
       ctx.beginPath();
       for (var m = 0; m <= n; m++) {
-        var fx = cx + (m / n - 0.5) * ancho * 2 + bal * (k / 3);
+        var fx = cx + (m / n - 0.5) * ancho * 2 + bal * (k / 4);
         if (m) ctx.lineTo(fx, yy + (m % 2 ? 7 : 0)); else ctx.moveTo(fx, yy);
       }
       ctx.stroke();
     }
-    ctx.strokeStyle = '#ff7a1f'; ctx.lineWidth = 6;
+    var ga = ctx.createLinearGradient(0, ay - 10, 0, ay + 12);
+    ga.addColorStop(0, '#ffb25c'); ga.addColorStop(1, '#e8641a');
+    ctx.strokeStyle = ga; ctx.lineWidth = 8; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.ellipse(cx, ay, rx, 10, 0, 0, Math.PI); ctx.stroke();
-    ctx.fillStyle = '#ff7a1f'; ctx.beginPath(); ctx.arc(xs[0], ay, 5, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ff8a2a'; ctx.beginPath(); ctx.arc(xs[0], ay, 6, 0, 7); ctx.fill();
   }
 
   function digito7(c, x, y, w, h, d, ligado, apagado) {
@@ -456,34 +499,85 @@
     });
   }
 
+  function chama(c, x, y, w, h, cor1, cor2, fase) {
+    var g = c.createLinearGradient(0, y - h, 0, y);
+    g.addColorStop(0, cor1); g.addColorStop(1, cor2);
+    c.fillStyle = g;
+    c.beginPath(); c.moveTo(x - w / 2, y);
+    c.quadraticCurveTo(x - w * 0.55, y - h * 0.5, x + Math.sin(fase) * w * 0.15, y - h);
+    c.quadraticCurveTo(x + w * 0.55, y - h * 0.5, x + w / 2, y);
+    c.closePath(); c.fill();
+  }
+  function estrelaDesenho(c, x, y, r) {
+    var g = c.createLinearGradient(0, y - r, 0, y + r);
+    g.addColorStop(0, '#ffe98a'); g.addColorStop(1, '#f29a1a');
+    c.beginPath();
+    for (var i = 0; i < 10; i++) { var rr2 = i % 2 ? r * 0.45 : r, a = -Math.PI / 2 + i * Math.PI / 5; c.lineTo(x + Math.cos(a) * rr2, y + Math.sin(a) * rr2); }
+    c.closePath(); c.fillStyle = g; c.fill(); c.lineJoin = 'round'; c.lineWidth = 2; c.strokeStyle = '#c47a14'; c.stroke();
+  }
+
   function desenharPlacar() {
     var j = jg;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     var topo = 116, mult = j.chuaSeq >= ELETRICO_SEQ ? 3 : j.seq >= FOGO_SEQ ? 2 : 1;
     var cor = mult === 3 ? '#7fd6ff' : mult === 2 ? '#ffb04a' : '#ffffff';
-    ctx.textAlign = 'left'; ctx.textBaseline = 'alphabetic';
-    ctx.fillStyle = mult > 1 ? cor : 'rgba(255,255,255,0.7)'; ctx.font = '600 15px "Trebuchet MS", sans-serif';
     var xe = ox + 18, xd = ox + mw * escala - 18, xc = ox + mw * escala / 2;
-    ctx.fillText('PONTOS' + (mult > 1 ? ' ×' + mult : ''), xe, topo + 22);
-    ctx.fillStyle = '#ffffff'; ctx.font = '700 44px "Trebuchet MS", sans-serif';
-    ctx.fillText(String(j.pontos), xe, topo + 66);
-    ctx.fillStyle = 'rgba(255,255,255,0.55)'; ctx.font = '600 14px "Trebuchet MS", sans-serif';
-    ctx.fillText('RECORDE ' + Math.max(dados.rec[j.modo], 0), xe, topo + 86);
+    ctx.textBaseline = 'alphabetic';
+    // quantidade de estrelas (ao lado da casinha)
+    var sx = ox + 112, sy = 40;
+    var gp = ctx.createLinearGradient(0, sy, 0, sy + 50);
+    gp.addColorStop(0, 'rgba(255,255,255,0.28)'); gp.addColorStop(1, 'rgba(255,255,255,0.10)');
+    rr(ctx, sx, sy, 126, 50, 25); ctx.fillStyle = gp; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.35)'; ctx.lineWidth = 1.5; ctx.stroke();
+    estrelaDesenho(ctx, sx + 27, sy + 26, 17);
+    ctx.fillStyle = '#ffffff'; ctx.font = '800 28px "Trebuchet MS", sans-serif'; ctx.textAlign = 'left';
+    ctx.fillText(String(dados.estrelas), sx + 54, sy + 36);
+    // medidor de fogo (enche com a sequência; chama quando ativa)
+    var fx = xd - 140, fy = 74, fw = 140, prog = mult > 1 ? 1 : Math.min(1, j.seq / FOGO_SEQ);
+    var quente = mult === 3 ? ['#e8fbff', '#46b8ff'] : ['#ffe07a', '#ff7a1f'];
+    ctx.save();
+    rr(ctx, fx, fy, fw, 20, 10); ctx.fillStyle = 'rgba(40,18,8,0.85)'; ctx.fill();
+    ctx.save(); rr(ctx, fx, fy, fw, 20, 10); ctx.clip();
+    var gf = ctx.createLinearGradient(fx, 0, fx + fw, 0); gf.addColorStop(0, mult === 3 ? '#2f86d8' : '#d9531a'); gf.addColorStop(1, quente[0]);
+    ctx.fillStyle = gf; ctx.fillRect(fx, fy, fw * prog, 20);
+    ctx.fillStyle = 'rgba(255,255,255,0.28)'; ctx.fillRect(fx, fy + 2, fw * prog, 5);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(255,200,120,0.55)'; ctx.lineWidth = 2; rr(ctx, fx, fy, fw, 20, 10); ctx.stroke();
+    var nch = Math.round(prog * 7);
+    for (var q = 0; q < nch; q++) {
+      var cx2 = fx + 12 + q * ((fw - 24) / 6), alt = (mult > 1 ? 34 : 22) + Math.sin(j.t * 9 + q * 1.7) * 6;
+      chama(ctx, cx2, fy + 4, 20, alt, quente[0], quente[1], j.t * 6 + q);
+    }
+    ctx.restore();
+    // pontos e recorde (cartão de vidro)
+    rr(ctx, xe - 12, topo + 2, 124, 100, 18);
+    ctx.fillStyle = 'rgba(255,255,255,0.09)'; ctx.fill(); ctx.strokeStyle = 'rgba(255,255,255,0.2)'; ctx.lineWidth = 1.5; ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.fillStyle = mult > 1 ? cor : 'rgba(255,255,255,0.72)'; ctx.font = '700 15px "Trebuchet MS", sans-serif';
+    ctx.fillText('PONTOS' + (mult > 1 ? ' ×' + mult : ''), xe, topo + 24);
+    ctx.fillStyle = '#ffffff'; ctx.font = '800 46px "Trebuchet MS", sans-serif';
+    ctx.fillText(String(j.pontos), xe, topo + 68);
+    ctx.fillStyle = '#e8c176'; ctx.font = '700 14px "Trebuchet MS", sans-serif';
+    ctx.fillText('RECORDE ' + Math.max(dados.rec[j.modo], 0), xe, topo + 90);
     ctx.textAlign = 'right';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)'; ctx.font = '600 15px "Trebuchet MS", sans-serif';
-    ctx.fillText('SEQUÊNCIA', xd, topo + 22);
-    ctx.fillStyle = '#ffffff'; ctx.font = '700 44px "Trebuchet MS", sans-serif';
-    ctx.fillText('×' + j.seq, xd, topo + 66);
+    ctx.fillStyle = 'rgba(255,255,255,0.72)'; ctx.font = '700 15px "Trebuchet MS", sans-serif';
+    ctx.fillText('SEQUÊNCIA', xd, topo + 24);
+    ctx.fillStyle = '#ffffff'; ctx.font = '800 46px "Trebuchet MS", sans-serif';
+    ctx.fillText('×' + j.seq, xd, topo + 68);
     // placar de LEDs
-    var bw = 132, bh = 84, bx = xc - bw / 2;
-    ctx.fillStyle = '#2a2e3a'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx, topo, bw, bh, 12) : ctx.rect(bx, topo, bw, bh); ctx.fill();
-    ctx.fillStyle = '#0b0c10'; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(bx + 8, topo + 10, bw - 16, bh - 20, 8) : ctx.rect(bx + 8, topo + 10, bw - 16, bh - 20); ctx.fill();
+    var bw = 136, bh = 88, bx = xc - bw / 2;
+    var gm = ctx.createLinearGradient(0, topo, 0, topo + bh); gm.addColorStop(0, '#454a58'); gm.addColorStop(1, '#1d2029');
+    rr(ctx, bx, topo, bw, bh, 14); ctx.fillStyle = gm; ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.18)'; ctx.lineWidth = 2; ctx.stroke();
+    rr(ctx, bx + 8, topo + 10, bw - 16, bh - 20, 8); ctx.fillStyle = '#07080c'; ctx.fill();
     var seg = Math.min(99, Math.ceil(j.tempo - 0.001));
     if (seg < 0) seg = 0;
     var d1 = Math.floor(seg / 10), d2 = seg % 10;
-    var ligado = seg <= 5 && j.comecou ? '#ff5a4a' : '#ff3b2f';
-    digito7(ctx, bx + 24, topo + 20, 34, 44, d1, ligado, '#3a1210');
-    digito7(ctx, bx + bw - 24 - 34, topo + 20, 34, 44, d2, ligado, '#3a1210');
+    var ligado = seg <= 5 && j.comecou ? '#ff6a58' : '#ff3b2f';
+    ctx.save(); ctx.shadowColor = 'rgba(255,60,40,0.8)'; ctx.shadowBlur = 10;
+    digito7(ctx, bx + 25, topo + 21, 34, 46, d1, ligado, '#3a1210');
+    digito7(ctx, bx + bw - 25 - 34, topo + 21, 34, 46, d2, ligado, '#3a1210');
+    ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,255,0.10)'; rr(ctx, bx + 10, topo + 12, bw - 20, 18, 7); ctx.fill();
   }
 
   function desenharCena() {
@@ -492,16 +586,34 @@
     ctx.setTransform(dpr * escala, 0, 0, dpr * escala, dpr * ox, 0);
     desenharAro(false);
     var sk = itemSel(BOLAS, dados.bola);
-    // mira
+    // mira: curva luminosa que afina, pontinhos brancos e seta no fim
     if (j.puxando && j.pronta) {
       var v = velDaPuxada(j.puxando);
       if (v) {
-        for (var i = 1; i <= 18; i++) {
-          var t = i * 0.045;
-          var x = j.pronta.x + v[0] * t, y = j.pronta.y + v[1] * t + 0.5 * G * t * t;
-          ctx.fillStyle = 'rgba(255,255,255,' + (0.9 - i * 0.04).toFixed(2) + ')';
-          ctx.beginPath(); ctx.arc(x, y, 5.5 - i * 0.18, 0, 7); ctx.fill();
+        var N = 26, pts = [];
+        for (var i = 0; i <= N; i++) {
+          var t = i * 0.036;
+          pts.push([j.pronta.x + v[0] * t, j.pronta.y + v[1] * t + 0.5 * G * t * t]);
         }
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.shadowColor = 'rgba(80,225,255,0.95)'; ctx.shadowBlur = 16 * dpr;
+        for (var k = 0; k < N; k++) {
+          var fr = k / N;
+          ctx.strokeStyle = 'rgba(120,232,255,' + (0.9 - fr * 0.55).toFixed(2) + ')';
+          ctx.lineWidth = 11 - fr * 8;
+          ctx.beginPath(); ctx.moveTo(pts[k][0], pts[k][1]); ctx.lineTo(pts[k + 1][0], pts[k + 1][1]); ctx.stroke();
+        }
+        ctx.shadowBlur = 0;
+        for (var d = 1; d < N; d += 2) {
+          ctx.fillStyle = 'rgba(255,255,255,' + (0.95 - d * 0.025).toFixed(2) + ')';
+          ctx.beginPath(); ctx.arc(pts[d][0], pts[d][1], 4.6 - d * 0.1, 0, 7); ctx.fill();
+        }
+        var a = pts[N], b = pts[N - 1], ang = Math.atan2(a[1] - b[1], a[0] - b[0]);
+        ctx.translate(a[0], a[1]); ctx.rotate(ang);
+        ctx.fillStyle = 'rgba(150,240,255,0.95)';
+        ctx.beginPath(); ctx.moveTo(16, 0); ctx.lineTo(-6, -11); ctx.lineTo(-1, 0); ctx.lineTo(-6, 11); ctx.closePath(); ctx.fill();
+        ctx.restore();
       }
     }
     // bolas em voo (com rastro de fogo ou eletricidade)
@@ -517,7 +629,7 @@
       ctx.beginPath(); ctx.ellipse(b.x, quicaY + R * 0.9, R * 0.8 * limita(1 - (quicaY - b.y) / 900, 0.3, 1), 6, 0, 0, 7); ctx.fill();
       bolaDesenho(ctx, b.x, b.y, R, sk, b.rot);
     });
-    if (j.pronta) {
+    if (j.pronta && tela !== 'menu') {
       var p = j.pronta;
       ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.beginPath(); ctx.ellipse(p.x, quicaY + R * 0.9, R * 0.8, 6, 0, 0, 7); ctx.fill();
       bolaDesenho(ctx, p.x, p.y, R, sk, 0);
@@ -554,9 +666,14 @@
       ctx.restore();
     });
     if (tela === 'jogando') desenharPlacar();
-    if (tela === 'jogando' && !j.comecou) {
-      ctx.fillStyle = 'rgba(255,255,255,0.8)'; ctx.textAlign = 'center'; ctx.font = '700 22px "Trebuchet MS", sans-serif';
-      ctx.fillText('Arraste para trás e solte', ox + mw * escala / 2, H * 0.62);
+    if (tela === 'jogando' && !j.comecou && !j.puxando) {
+      var pw = Math.min(360, W - 40), px0 = ox + mw * escala / 2 - pw / 2, py0 = H * 0.58;
+      var gh = ctx.createLinearGradient(0, py0, 0, py0 + 58);
+      gh.addColorStop(0, 'rgba(255,255,255,0.30)'); gh.addColorStop(1, 'rgba(255,255,255,0.12)');
+      rr(ctx, px0, py0, pw, 58, 29); ctx.fillStyle = gh; ctx.fill();
+      ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#ffffff'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.font = '800 24px "Trebuchet MS", sans-serif';
+      ctx.fillText('«  Arraste para trás e solte', px0 + pw / 2, py0 + 30);
     }
   }
 
@@ -571,15 +688,31 @@
   function novoJogoMenu() { novoJogo('relogio'); }
 
   // ---------- toque ----------
+  // ajuda de mira: se o tiro já vai perto do aro, empurra a velocidade na direção de um tiro que passa
+  // pelo centro (só arcos altos, que não batem no aro na subida). A linha pontilhada mostra o resultado.
+  function assistir(x0, y0, vx, vy) {
+    if (ASSISTE_MIRA <= 0) return [vx, vy];
+    var xs = aroXs(), cx = (xs[0] + xs[1]) / 2, cy = aroY(), melhor = null, dmin = 1e9;
+    for (var t = 1.2; t <= 2.1; t += 0.02) {
+      var ux = (cx - x0) / t, uy = (cy - y0 - 0.5 * G * t * t) / t;
+      if (uy + G * t <= 60) continue;                       // tem de chegar ao aro descendo
+      var d = Math.sqrt((ux - vx) * (ux - vx) + (uy - vy) * (uy - vy));
+      if (d < dmin) { dmin = d; melhor = [ux, uy]; }
+    }
+    if (!melhor || dmin > ASSISTE_ALCANCE) return [vx, vy];
+    var f = ASSISTE_MIRA * (1 - 0.5 * dmin / ASSISTE_ALCANCE);   // quanto mais perto, mais ajuda
+    return [vx + (melhor[0] - vx) * f, vy + (melhor[1] - vy) * f];
+  }
   function velDaPuxada(p) {
     var px = (p.x0 - p.x) / escala, py = (p.y0 - p.y) / escala;
     var len = Math.sqrt(px * px + py * py);
-    if (len * escala < PUXAR_MIN_PX || py > -6) return null;      // pouco ou para cima: não vale
+    if (len * escala < PUXAR_MIN_PX || py > -4 || !jg || !jg.pronta) return null;   // pouco ou para cima: não vale
     if (len > PUXAR_MAX) { px *= PUXAR_MAX / len; py *= PUXAR_MAX / len; }
-    return [px * K_PUXAR, py * K_PUXAR];
+    return assistir(jg.pronta.x, jg.pronta.y, px * K_PUXAR, py * K_PUXAR);
   }
   function aoPressionar(ev) {
     if (tela !== 'jogando' || !jg || !jg.pronta || jg.fimPend || jg.puxando) return;
+    if (ev.pointerType === 'touch' && Math.max(ev.width || 0, ev.height || 0) > PALMA_PX) return;   // palma da mão
     ev.preventDefault();
     try { cv.setPointerCapture(ev.pointerId); } catch (e) { /* ignora */ }
     var r = cv.getBoundingClientRect();
@@ -801,6 +934,7 @@
       congelar: function (v) { congelado = !!v; },
       desenhar: desenhar,
       lancar: lancar,
+      assistir: assistir,
       comecar: comecar,
       geo: function () { var xs = aroXs(); return { x0: xs[0], x1: xs[1], y: aroY(), mw: mw, mh: mh, chaoY: chaoY, escala: escala }; },
       constantes: function () { return { G: G, R: R, FOGO_SEQ: FOGO_SEQ, ELETRICO_SEQ: ELETRICO_SEQ, TEMPOS: TEMPOS }; },

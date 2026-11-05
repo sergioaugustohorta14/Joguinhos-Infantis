@@ -29,8 +29,9 @@
 
 .bk-topo { height: var(--alvo-min); display: flex; align-items: center; justify-content: center; width: 100%; }
 .bk-pilula {
-  padding: 8px 22px;
-  background: rgba(255, 255, 255, 0.12);
+  padding: 8px 24px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.1));
+  border: 1.5px solid rgba(255, 255, 255, 0.35);
   border-radius: 26px;
   font-size: 26px;
   font-weight: 700;
@@ -72,16 +73,22 @@
   width: min(100%, 560px);
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 6px;
-  padding-top: 14px;
+  gap: 4px;
+  padding: 8px;
+  margin-bottom: 4px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.08));
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  border-radius: 28px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
 }
 .bk-aba {
   position: relative;
   min-height: var(--alvo-min);
   padding: 8px 2px;
-  background: #1b2347;
+  background: transparent;
   border: 0;
   border-radius: 20px;
+  text-shadow: 0 2px 3px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -91,8 +98,8 @@
   font-weight: 700;
   color: #f4f1ea;
 }
-.bk-aba svg { width: 32px; height: 32px; fill: none; stroke: #ffb04a; stroke-width: 3.4; stroke-linecap: round; stroke-linejoin: round; }
-.bk-aba:active { background: #2a3566; }
+.bk-aba svg { width: 44px; height: 44px; display: block; filter: drop-shadow(0 3px 3px rgba(0, 0, 0, 0.45)); }
+.bk-aba:active { background: rgba(255, 255, 255, 0.16); }
 .bk-notif {
   position: absolute;
   top: 4px;
@@ -217,3 +224,13 @@
   .bk-aba { min-height: 64px; }
   .bk-aba svg { width: 24px; height: 24px; }
 }
+
+/* casinha em bolha de vidro, como no resto do jogo */
+#tela-basquete .btn-voltar {
+  background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.6), rgba(255, 255, 255, 0.14) 62%), rgba(130, 160, 215, 0.28);
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  border-radius: 50%;
+  color: #eef5ff;
+  box-shadow: inset 0 -6px 12px rgba(40, 70, 140, 0.35), 0 6px 14px rgba(0, 0, 0, 0.35);
+}
+#tela-basquete .btn-voltar:active { background: radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0.1) 62%), rgba(130, 160, 215, 0.4); }

@@ -80,19 +80,21 @@ def testar(p, base, nome, **ctx_args):
     pag.screenshot(path=str(CAPTURAS / f"{nome}-basquete-desafios.png"))
     tocar("#bk-painel-voltar")
 
+    confere("Arremessos por tempo" in pag.locator("#bk-modo-minuto").text_content(), "o segundo modo se chama Arremessos por tempo")
+
     # ---- começar: contra o relógio ----
     tocar("#bk-modo-relogio")
     confere(pag.evaluate(f"{T}.tela()") == "jogando" and ev(pag, "j.modo") == "relogio", "começa o modo Contra o relógio")
     pag.evaluate(f"{T}.congelar(true)")
-    confere(abs(ev(pag, "j.tempo") - 15) < 0.01, "começa com 15 segundos")
+    confere(abs(ev(pag, "j.tempo") - 30) < 0.01, "Contra o relógio começa com 30 segundos")
     avancar(pag, 2)
-    confere(abs(ev(pag, "j.tempo") - 15) < 0.01, "o relógio só corre depois do primeiro arremesso")
+    confere(abs(ev(pag, "j.tempo") - 30) < 0.01, "o relógio só corre depois do primeiro arremesso")
     pag.screenshot(path=str(CAPTURAS / f"{nome}-basquete-inicio.png"))
 
     # ---- chuá: 2 pontos + 3 s ----
     chua(pag)
     confere(ev(pag, "j.pontos") == 2 and ev(pag, "j.chuas") == 1 and ev(pag, "j.cestas") == 1, "chuá vale 2 pontos")
-    confere(ev(pag, "j.tempo") > 15, f"chuá dá tempo extra ({ev(pag, 'j.tempo'):.1f} s)")
+    confere(ev(pag, "j.tempo") > 30, f"chuá dá tempo extra ({ev(pag, 'j.tempo'):.1f} s)")
     confere(ev(pag, "j.seq") == 1, "sequência 1")
     chua(pag)
     chua(pag)
@@ -103,6 +105,21 @@ def testar(p, base, nome, **ctx_args):
     chua(pag)
     chua(pag)
     confere(ev(pag, "j.seq") == 5 and ev(pag, "j.fogoUsou"), "5 cestas seguidas ativam o Pegando fogo")
+
+    # ---- bola nova logo depois do tiro; o aro só muda quando nada está no ar ----
+    pag.evaluate(f"() => {{ const v = {T}.mirar(); {T}.lancar(v[0], v[1]); }}")
+    alvo0 = ev(pag, "j.aro.alvo")
+    avancar(pag, 0.5)
+    confere(ev(pag, "j.pronta !== null") and ev(pag, "j.bolas.some(b => !b.feita && !b.errou)"), "a bola nova já fica pronta com a anterior ainda no ar")
+    confere(ev(pag, "j.aro.alvo") == alvo0, "o aro não muda de lugar com a bola no ar")
+    avancar(pag, 2.5)
+
+    # ---- ajuda de mira: tiro quase certo é puxado para o centro do aro ----
+    pag.evaluate(f"() => {{ const v = {T}.mirar(1.5); const b = {T}.jogo().pronta; window.__v = v; window.__r = [{T}.assistir(b.x, b.y, v[0] + 90, v[1]), {T}.assistir(b.x, b.y, v[0] + 600, v[1])]; }}")
+    perto = pag.evaluate("() => Math.hypot(window.__r[0][0] - window.__v[0], window.__r[0][1] - window.__v[1])")
+    longe = pag.evaluate("() => Math.hypot(window.__r[1][0] - (window.__v[0] + 600), window.__r[1][1] - window.__v[1])")
+    confere(perto < 90 * 0.8, f"a ajuda de mira corrige um tiro que erra um pouco (erro de 90 para {perto:.0f})")
+    confere(longe < 1, "e não mexe num tiro que erra muito")
 
     # ---- errar zera a sequência ----
     pag.evaluate(f"() => {{ const b = {T}.jogo().pronta; {T}.lancar(60, -900); }}")
@@ -161,7 +178,7 @@ def testar(p, base, nome, **ctx_args):
     # ---- arremesso com o dedo de verdade: arrastar para trás e soltar ----
     tocar("#bk-modo-minuto")
     pag.evaluate(f"{T}.congelar(true)")
-    confere(abs(ev(pag, "j.tempo") - 60) < 0.01, "Um minuto começa com 60 segundos")
+    confere(abs(ev(pag, "j.tempo") - 90) < 0.01, "Arremessos por tempo começa com 90 segundos")
     vp = pag.viewport_size
     x0, y0 = vp["width"] * 0.5, vp["height"] * 0.7
     if toque:
@@ -178,6 +195,15 @@ def testar(p, base, nome, **ctx_args):
     pag.wait_for_timeout(100)
     confere(ev(pag, "j.bolas.length") == 1 and ev(pag, "j.comecou"), "arrastar para trás e soltar arremessa a bola")
     confere(ev(pag, "j.bolas[0].vy") < 0, "a bola sobe")
+    if toque:
+        # palma da mão (contato largo) não começa a mira
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": x0, "y": y0, "radiusX": 80, "radiusY": 80}]})
+        pag.wait_for_timeout(60)
+        confere(ev(pag, "j.puxando === null"), "a palma da mão apoiada não começa a mira")
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchStart", "touchPoints": [{"x": 2, "y": 2}]})
+        cdp.send("Input.dispatchTouchEvent", {"type": "touchEnd", "touchPoints": []})
+        pag.wait_for_timeout(150)
     # um toque simples (sem arrastar) não arremessa
     pag.wait_for_timeout(50)
     avancar(pag, 4)

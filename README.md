@@ -43,8 +43,8 @@ Nenhuma fileira de obstáculos fecha todas as saídas.
 4. Dica: solte primeiro os blocos das cores que estão na frente das filas. Todo nível tem solução, e o nível em que você parou fica guardado no aparelho.
 
 ### Basquete
-1. Escolha **Contra o relógio** (15 s, cada cesta dá tempo extra) ou **Um minuto** (60 s, sem tempo extra). O relógio só começa a correr no primeiro arremesso.
-2. **Arraste o dedo para trás** (para baixo): aparece uma linha pontilhada mostrando o caminho da bola. **Solte** para arremessar. Um toque sem arrastar não arremessa.
+1. Escolha **Contra o relógio** (30 s, cada cesta dá tempo extra) ou **Arremessos por tempo** (90 s, sem tempo extra). O relógio só começa a correr no primeiro arremesso.
+2. **Arraste o dedo para trás** (para baixo): aparece uma linha pontilhada mostrando o caminho da bola. **Solte** para arremessar. Um toque sem arrastar não arremessa. Há uma **ajuda de mira** discreta: se o tiro já vai perto do aro, ele é puxado um pouco para o centro (a linha pontilhada já mostra o resultado). A bola nova fica pronta logo depois do tiro.
 3. Cesta vale 1 ponto; **chuá** (sem encostar no aro) vale 2 e dá mais tempo. 5 cestas seguidas ativam o **Pegando fogo** (pontos x2) e 3 chuás seguidos o **Elétrico** (pontos x3). Errar zera a sequência.
 4. Ao fim, as cestas e os chuás viram **estrelas**, usadas no **Vestiário** (bolas e quadras). Há 3 **desafios do dia**, **conquistas** e a lista dos 5 melhores **recordes** de cada modo.
 5. Tudo fica só no aparelho (sem conta, sem ranking online, sem anúncios).
