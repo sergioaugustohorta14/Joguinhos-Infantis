@@ -78,6 +78,11 @@ Constantes no começo de `js/desviar.js`: `VEL_INICIAL`, `VEL_MAXIMA`, `VEL_SOBE
 - Nível atual guardado em `localStorage` (`joguinhos.bolinhas.nivel`). Ganchos de teste em `Jogos.bolinhas._teste`.
 - Em celular deitado e tablet o jogo fica pequeno (a tela é em pé, como o jogo de referência).
 
+## Botão "voltar às opções" de cada jogo
+- `.btn-opcoes` (em `style.css`): seta que leva às opções do próprio jogo, sem ir ao menu geral. Desviar (`#dv-opcoes`) volta à escolha do personagem; Bolinhas (`#bo-opcoes`) à escolha de nível (`#bo-niveis`: "Continuar" + grade dos níveis liberados; entrar no jogo já abre essa tela); Basquete (`#bk-opcoes`, embaixo à direita) ao menu de modos. Colorir já tem o seu (`#ed-galeria`, volta à galeria).
+- Em pé fica embaixo da casinha; **deitado fica ao lado dela** e o placar (`.dv-hud`, `.bo-hud`) é deslocado, porque no Desviar a lateral esquerda da tela é zona de toque para jogar (um botão ali faria a criança sair da corrida sem querer). Cada jogo mostra o botão só durante a partida.
+- Vencer um nível antigo no Bolinhas não faz perder o avanço (`gravarNivel(Math.max(...))`).
+
 ## Pegadinhas conhecidas
 - **Cache do aparelho:** versões antigas do `sw.js` serviam o cache primeiro. Quem já tinha o app precisa recarregar uma ou duas vezes. Hoje o `sw.js` busca a rede primeiro (com `cache: 'no-cache'`, porque o GitHub Pages guarda 10 minutos).
 - **Simulador de toque do Chromium:** depois de um arrasto por CDP (`Input.dispatchTouchEvent`), o primeiro toque seguinte é engolido. Os testes dão um toque descartável no canto (2,2) depois de cada arrasto.

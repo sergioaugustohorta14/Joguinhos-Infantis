@@ -113,7 +113,12 @@ def testar(p, base, nome, **ctx_args):
     c.tap() if toque else c.click()
     pag.wait_for_timeout(600)
     confere(pag.locator("#tela-bolinhas").is_visible() and not pag.locator("#tela-menu").is_visible(), "o cartão Bolinhas abre o jogo")
-    confere(pag.locator("#bo-n").text_content() == "1", "começa no nível 1")
+    confere(pag.locator("#bo-niveis").is_visible() and pag.locator(".bo-nivel-btn").count() == 1, "ao entrar, aparece a escolha de nível (só o nível 1 liberado)")
+    pag.screenshot(path=str(CAPTURAS / f"{nome}-bolinhas-niveis.png"))
+    b = pag.locator("#bo-continuar")
+    b.tap() if toque else b.click()
+    pag.wait_for_timeout(300)
+    confere(pag.locator("#bo-n").text_content() == "1" and not pag.locator("#bo-niveis").is_visible(), "Continuar começa no nível 1")
     pag.evaluate(f"{T}.congelar(true)")
     confere(pag.evaluate("document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight"), "sem rolagem")
     grandes = pag.evaluate(
@@ -157,6 +162,22 @@ def testar(p, base, nome, **ctx_args):
     b.tap() if toque else b.click()
     pag.wait_for_timeout(200)
     confere(pag.locator("#bo-n").text_content() == "2" and not pag.locator("#bo-fim").is_visible(), "o botão leva ao nível 2")
+
+    # ---- voltar para as opções (escolha de nível) sem sair do jogo ----
+    sobrepoe = pag.evaluate("""() => { const a = document.querySelector('#tela-bolinhas .btn-voltar').getBoundingClientRect(), b = document.getElementById('bo-opcoes').getBoundingClientRect();
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top; }""")
+    confere(pag.locator("#bo-opcoes").is_visible() and not sobrepoe, "o botão de voltar às opções aparece e não cobre a casinha")
+    b = pag.locator("#bo-opcoes")
+    b.tap() if toque else b.click()
+    pag.wait_for_timeout(300)
+    confere(pag.locator("#bo-niveis").is_visible() and pag.locator(".bo-nivel-btn").count() == 2 and not pag.locator("#bo-opcoes").is_visible(), "voltar mostra a escolha de nível (1 e 2)")
+    confere(pag.locator("#tela-bolinhas").is_visible() and not pag.locator("#tela-menu").is_visible(), "continua dentro do jogo")
+    b = pag.locator('.bo-nivel-btn[data-n="1"]')
+    b.tap() if toque else b.click()
+    pag.wait_for_timeout(300)
+    confere(pag.locator("#bo-n").text_content() == "1" and not pag.locator("#bo-niveis").is_visible(), "escolher o nível 1 volta a ele")
+    pag.evaluate(f"{T}.resolver(900)")
+    confere(pag.evaluate("localStorage.getItem('joguinhos.bolinhas.nivel')") == "2", "vencer um nível antigo não faz perder o avanço")
 
     # ---- cena de um nível mais difícil, no meio do jogo ----
     pag.evaluate(f"{T}.congelar(true); {T}.nivel(14)")

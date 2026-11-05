@@ -119,6 +119,18 @@ def testar(p, base, nome, **ctx_args):
     confere(pag.evaluate(f"{T}.estado().fase") == "jogando", "jogo começa ao tocar no personagem")
     confere(pag.locator("#dv-hud").is_visible() and pag.locator("#dv-vidas .vida").count() == 3, "placar e 3 vidas aparecem")
     confere(jg(pag, "j.vidas") == 3 and jg(pag, "j.faixa") == 1, "começa com 3 vidas na pista do meio")
+    # ---- voltar para as opções (escolha do personagem) sem sair do jogo ----
+    confere(pag.locator("#dv-opcoes").is_visible(), "o botão de voltar às opções aparece durante a corrida")
+    sobrepoe = pag.evaluate("""() => { const a = document.querySelector('#tela-desviar .btn-voltar').getBoundingClientRect(), b = document.getElementById('dv-opcoes').getBoundingClientRect();
+        return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top; }""")
+    confere(not sobrepoe, "o botão de voltar às opções não fica em cima da casinha")
+    tocar("#dv-opcoes")
+    pag.wait_for_timeout(300)
+    confere(pag.evaluate(f"{T}.estado().fase") == "escolha" and pag.locator("#dv-escolha").is_visible() and not pag.locator("#dv-hud").is_visible(), "voltar leva à escolha do personagem")
+    confere(pag.locator("#tela-desviar").is_visible() and not pag.locator("#tela-menu").is_visible() and not pag.locator("#dv-opcoes").is_visible(), "continua no Desviar, e o botão some na escolha")
+    tocar('.dv-card[data-heroi="ourico"]')
+    pag.wait_for_timeout(200)
+    confere(pag.evaluate(f"{T}.estado().fase") == "jogando" and jg(pag, "j.vidas") == 3, "escolhendo de novo, a corrida recomeça")
     pag.evaluate(f"{T}.limpar(); {T}.congelar(true)")  # relógio parado: só avança com passo()
 
     dedo = Dedo(ctx, pag, toque)

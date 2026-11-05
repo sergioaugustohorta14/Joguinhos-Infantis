@@ -227,6 +227,8 @@
     geo = calcularGeo();
     $('bo-n').textContent = n;
     $('bo-fim').hidden = true;
+    $('bo-niveis').hidden = true;
+    $('bo-opcoes').hidden = false;
     medir();
   }
 
@@ -357,7 +359,7 @@
     var vazias = j.filas.every(function (fila) { return fila.length === 0; });
     if (vazias && j.voos.length === 0) {
       j.fase = 'ganhou'; j.fim = 0.8;
-      if (!simulando) gravarNivel(j.n + 1);
+      if (!simulando) gravarNivel(Math.max(lerNivel(), j.n + 1));   // jogar um nível antigo não faz perder o avanço
       som('recorde');
       return;
     }
@@ -532,6 +534,26 @@
   }
 
   // ---------- telas ----------
+  // escolha de nível: "Continuar" e a grade dos níveis já liberados
+  function mostrarNiveis() {
+    var max = lerNivel();
+    $('bo-cont-n').textContent = max;
+    var grade = $('bo-grade');
+    grade.innerHTML = '';
+    for (var n = 1; n <= max; n++) {
+      var b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'bo-nivel-btn' + (n === max ? ' atual' : '');
+      b.textContent = n;
+      b.setAttribute('data-n', n);
+      grade.appendChild(b);
+    }
+    $('bo-niveis').hidden = false;
+    $('bo-niveis').scrollTop = 0;
+    $('bo-fim').hidden = true;
+    $('bo-opcoes').hidden = true;
+  }
+
   function mostrarFim() {
     var j = jogo, ganhou = j.fase === 'ganhou';
     $('bo-titulo').textContent = ganhou ? 'Muito bem!' : 'Ops, encheu!';
@@ -574,6 +596,14 @@
     $('bo-reiniciar').addEventListener('click', function () { Som.liberar(); Som.tocar('voltar'); novoNivel(jogo.n); });
     $('bo-denovo').addEventListener('click', function () { Som.liberar(); Som.tocar('abrir'); novoNivel(jogo.n); });
     $('bo-proximo').addEventListener('click', function () { Som.liberar(); Som.tocar('abrir'); novoNivel(jogo.n + 1); });
+    $('bo-opcoes').addEventListener('click', function () { Som.liberar(); Som.tocar('voltar'); mostrarNiveis(); });
+    $('bo-continuar').addEventListener('click', function () { Som.liberar(); Som.tocar('abrir'); novoNivel(lerNivel()); });
+    $('bo-grade').addEventListener('click', function (ev) {
+      var b = ev.target.closest('.bo-nivel-btn');
+      if (!b) return;
+      Som.liberar(); Som.tocar('abrir');
+      novoNivel(+b.getAttribute('data-n'));
+    });
   }
 
   function redimensionar() { if (rodando) medir(); }
@@ -586,6 +616,7 @@
       congelado = false;
       medir();
       novoNivel(lerNivel());
+      mostrarNiveis();
       window.addEventListener('resize', redimensionar);
       ultimoQuadro = performance.now();
       idQuadro = requestAnimationFrame(quadro);

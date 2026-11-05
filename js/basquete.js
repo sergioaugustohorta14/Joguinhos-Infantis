@@ -352,6 +352,7 @@
   function terminar() {
     var j = jg;
     tela = 'fim';
+    $('bk-opcoes').hidden = true;
     j.pronta = null;
     dados.dia.partidas++;
     dados.stats.partidas++;
@@ -736,6 +737,7 @@
   // ---------- telas (menu, painéis, fim) ----------
   function mostrarMenu() {
     tela = 'menu';
+    $('bk-opcoes').hidden = true;
     novoJogoMenu();
     $('bk-menu').hidden = false;
     $('bk-painel').hidden = true;
@@ -750,6 +752,7 @@
   function comecar(modo) {
     novoJogo(modo);
     tela = 'jogando';
+    $('bk-opcoes').hidden = false;
     $('bk-menu').hidden = true; $('bk-painel').hidden = true; $('bk-fim').hidden = true;
     som('abrir');
   }
@@ -902,6 +905,7 @@
     $('bk-painel-voltar').addEventListener('click', function () { Som.liberar(); som('voltar'); mostrarMenu(); });
     $('bk-denovo').addEventListener('click', function () { Som.liberar(); comecar(jg.modo); });
     $('bk-fim-menu').addEventListener('click', function () { Som.liberar(); som('voltar'); mostrarMenu(); });
+    $('bk-opcoes').addEventListener('click', function () { Som.liberar(); som('voltar'); mostrarMenu(); });
   }
 
   function redimensionar() { if (rodando) { medir(); if (jg && jg.aro) posicionarAro(true); } }

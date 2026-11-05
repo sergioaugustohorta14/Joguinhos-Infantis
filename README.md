@@ -49,6 +49,9 @@ Nenhuma fileira de obstáculos fecha todas as saídas.
 4. Ao fim, as cestas e os chuás viram **estrelas**, usadas no **Vestiário** (bolas e quadras). Há 3 **desafios do dia**, **conquistas** e a lista dos 5 melhores **recordes** de cada modo.
 5. Tudo fica só no aparelho (sem conta, sem ranking online, sem anúncios).
 
+### Voltar sem sair do jogo
+Dentro de cada jogo há dois botões no alto: a **casinha** volta para o menu com todos os jogos, e a **seta** volta para as opções do próprio jogo (no Desviar, a escolha do personagem; no Bolinhas, a escolha do nível; no Basquete, a escolha do modo, embaixo à direita). No Colorir, o botão de quadradinhos do editor volta para a galeria de desenhos. Em tela deitada a seta fica ao lado da casinha.
+
 ## Instalar no Android
 1. Abra o endereço do jogo no Chrome, com internet.
 2. Toque em Colorir e abra um desenho, para o aparelho guardar tudo.

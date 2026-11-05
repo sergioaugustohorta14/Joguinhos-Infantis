@@ -127,6 +127,8 @@
         </svg>
       </button>
 
+      <button id="dv-opcoes" class="btn-canto btn-opcoes" type="button" aria-label="Voltar para a escolha do personagem" hidden><svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M40 24H10M22 11L9 24l13 13" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
       <div id="dv-hud" class="dv-hud" hidden>
         <div class="dv-pontos">
           <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M24 5 29.5 18.5 44 19.5 33 29 36.5 43 24 35.5 11.5 43 15 29 4 19.5 18.5 18.5Z"/></svg>
@@ -181,11 +183,19 @@
         </svg>
       </button>
 
+      <button id="bo-opcoes" class="btn-canto btn-opcoes" type="button" aria-label="Escolher outro nível" hidden><svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M40 24H10M22 11L9 24l13 13" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+
       <div class="bo-hud"><div class="bo-nivel">Nível <b id="bo-n">1</b></div></div>
 
       <button id="bo-reiniciar" class="btn-canto" type="button" aria-label="Recomeçar a fase">
         <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M38 24a14 14 0 1 1-5-10.7M33 6v9h9" fill="none" stroke="currentColor" stroke-width="3.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
+
+      <div id="bo-niveis" class="dv-camada bo-niveis" hidden>
+        <h2>Escolha o nível</h2>
+        <button id="bo-continuar" class="bo-continuar" type="button">Continuar: nível <b id="bo-cont-n">1</b></button>
+        <div id="bo-grade" class="bo-grade" aria-label="Níveis"></div>
+      </div>
 
       <div id="bo-fim" class="dv-camada" hidden>
         <div class="dv-painel">
@@ -212,6 +222,8 @@
           <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="currentColor" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/>
         </svg>
       </button>
+
+      <button id="bk-opcoes" class="btn-canto btn-opcoes bk-opcoes" type="button" aria-label="Voltar para as opções do Basquete" hidden><svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M40 24H10M22 11L9 24l13 13" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
 
       <div id="bk-menu" class="bk-camada">
         <div class="bk-topo"><span class="bk-pilula">&#9733; <b id="bk-estrelas">0</b></span></div>

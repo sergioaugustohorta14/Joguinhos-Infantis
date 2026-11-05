@@ -66,6 +66,8 @@ button {
 #btn-som { right: calc(env(safe-area-inset-right) + 16px); }
 .btn-voltar { left: calc(env(safe-area-inset-left) + 16px); }
 .btn-canto:active { background: var(--botao-ativo); transform: scale(0.97); }
+/* "voltar" de dentro do jogo para as opções do próprio jogo (a casinha sai para o menu geral) */
+.btn-opcoes { top: calc(env(safe-area-inset-top) + 16px + var(--alvo-min) + 12px); left: calc(env(safe-area-inset-left) + 16px); z-index: 8; }
 .ico { width: 100%; height: 100%; display: block; }
 
 /* estado do ícone de som */
@@ -124,4 +126,9 @@ button {
 @media (prefers-reduced-motion: reduce) {
   .tela { animation: none; }
   .cartao { transition: none; }
+}
+
+/* tela deitada: o "voltar às opções" fica ao lado da casinha, longe da área onde se toca para jogar */
+@media (orientation: landscape) {
+  .btn-opcoes:not(.bk-opcoes) { top: calc(env(safe-area-inset-top) + 16px); left: calc(env(safe-area-inset-left) + 16px + var(--alvo-min) + 12px); }
 }

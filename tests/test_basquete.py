@@ -85,6 +85,13 @@ def testar(p, base, nome, **ctx_args):
     # ---- começar: contra o relógio ----
     tocar("#bk-modo-relogio")
     confere(pag.evaluate(f"{T}.tela()") == "jogando" and ev(pag, "j.modo") == "relogio", "começa o modo Contra o relógio")
+    # ---- voltar para as opções do Basquete sem sair do jogo ----
+    confere(pag.locator("#bk-opcoes").is_visible(), "o botão de voltar às opções aparece durante o jogo")
+    tocar("#bk-opcoes")
+    confere(pag.evaluate(f"{T}.tela()") == "menu" and pag.locator("#bk-menu").is_visible() and not pag.locator("#bk-opcoes").is_visible(), "voltar leva às opções (escolha do modo)")
+    confere(pag.locator("#tela-basquete").is_visible() and not pag.locator("#tela-menu").is_visible(), "continua dentro do Basquete")
+    tocar("#bk-modo-relogio")
+    confere(pag.evaluate(f"{T}.tela()") == "jogando", "escolhendo o modo, o jogo recomeça")
     pag.evaluate(f"{T}.congelar(true)")
     confere(abs(ev(pag, "j.tempo") - 30) < 0.01, "Contra o relógio começa com 30 segundos")
     avancar(pag, 2)

@@ -621,6 +621,7 @@
     $('dv-escolha').hidden = false;
     $('dv-fim').hidden = true;
     $('dv-hud').hidden = true;
+    $('dv-opcoes').hidden = true;
     $('dv-fase').hidden = true;
     clearTimeout(tempoAviso);
     $('dv-rec').textContent = lerRecorde();
@@ -634,6 +635,7 @@
     $('dv-escolha').hidden = true;
     $('dv-fim').hidden = true;
     $('dv-hud').hidden = false;
+    $('dv-opcoes').hidden = false;
     pintarHud();
     mostrarFase();
     Som.tocar('abrir');
@@ -652,6 +654,7 @@
       $('dv-novo').hidden = !novo;
       $('dv-fim').hidden = false;
       $('dv-hud').hidden = true;
+      $('dv-opcoes').hidden = true;
       if (novo) Som.tocar('recorde');
     }, 1100);
   }
@@ -691,6 +694,7 @@
     });
     $('dv-denovo').addEventListener('click', function () { Som.liberar(); comecar(estado.heroi); });
     $('dv-trocar').addEventListener('click', function () { Som.liberar(); Som.tocar('voltar'); mostrarEscolha(); });
+    $('dv-opcoes').addEventListener('click', function () { Som.liberar(); Som.tocar('voltar'); mostrarEscolha(); });
     cv.addEventListener('pointerdown', aoPressionar);
     cv.addEventListener('pointermove', aoMover);
     cv.addEventListener('pointerup', aoSoltar);
