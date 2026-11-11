@@ -117,7 +117,9 @@ def main():
             print("\n== iPhone ==")
             nav, ctx, pag, erros = novo(p, base, BLOQUEIA_AVISO_REAL, **p.devices["iPhone 13"])
             pag.wait_for_timeout(3200)
-            confere(visivel(pag, "#instalar-passos") and "Compartilhar" in pag.locator("#instalar-passos").text_content(), "no iPhone: Compartilhar e Adicionar à Tela de Início")
+            passos = pag.locator("#instalar-passos").text_content()
+            confere(visivel(pag, "#instalar-passos") and "Compartilhar" in passos and "Adicionar à Tela de Início" in passos, "no iPhone: Compartilhar e Adicionar à Tela de Início")
+            confere("Role a lista" in passos and "Editar Ações" in passos and "iPad" in passos, "explica a rolagem da lista, o Editar Ações e onde fica o botão no iPad")
             nav.close()
 
             print("\n== app já instalado ==")

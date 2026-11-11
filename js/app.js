@@ -93,7 +93,9 @@
     } else {
       // sem o aviso do navegador: ensina o caminho manual
       passos.innerHTML = ehIOS()
-        ? '<li>Toque no botão <b>Compartilhar</b> (quadrado com uma seta para cima), na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>'
+        ? '<li>No <b>Safari</b>, toque em <b>Compartilhar</b> (quadrado com uma seta para cima): no iPad fica no alto, perto da barra de endereço; no iPhone, embaixo.</li>'
+        + '<li><b>Role a lista de ações para baixo</b> (depois de "Buscar na Página") e toque em <b>Adicionar à Tela de Início</b>. Se não aparecer, vá ao fim da lista, toque em <b>Editar Ações</b> e adicione.</li>'
+        + '<li>Toque em <b>Adicionar</b>.</li>'
         : '<li>Abra o menu do navegador (os <b>três pontinhos</b>).</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>';
       passos.hidden = false;
       agora.hidden = true;
