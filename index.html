@@ -29,6 +29,22 @@
         </svg>
       </button>
 
+      <button id="btn-instalar" class="btn-canto" type="button" aria-label="Instalar o app no aparelho" hidden>
+        <svg viewBox="0 0 48 48" class="ico" aria-hidden="true"><path d="M24 7v22M14 20l10 10 10-10M9 36v4h30v-4" fill="none" stroke="currentColor" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <div id="instalar-folha" class="folha" hidden role="dialog" aria-modal="true" aria-labelledby="instalar-titulo">
+        <div class="folha-caixa">
+          <h2 id="instalar-titulo">Instalar os Joguinhos</h2>
+          <p class="folha-texto">O app fica na tela inicial, abre em tela cheia e funciona até sem internet.</p>
+          <ol id="instalar-passos" class="folha-passos" hidden></ol>
+          <div class="folha-botoes">
+            <button id="instalar-agora" class="folha-botao folha-principal" type="button">Instalar</button>
+            <button id="instalar-depois" class="folha-botao" type="button">Agora não</button>
+          </div>
+        </div>
+      </div>
+
       <div class="menu-cartoes">
         <button class="cartao cartao-colorir" type="button" data-ir="colorir" aria-label="Colorir">
           <svg viewBox="0 0 120 120" class="cartao-ico" aria-hidden="true">

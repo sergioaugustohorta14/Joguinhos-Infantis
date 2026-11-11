@@ -132,3 +132,48 @@ button {
 @media (orientation: landscape) {
   .btn-opcoes:not(.bk-opcoes) { top: calc(env(safe-area-inset-top) + 16px); left: calc(env(safe-area-inset-left) + 16px + var(--alvo-min) + 12px); }
 }
+
+/* ---------- instalar o app ---------- */
+#btn-instalar { left: calc(env(safe-area-inset-left) + 16px); }
+.folha {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px calc(env(safe-area-inset-right) + 16px) calc(env(safe-area-inset-bottom) + 16px) calc(env(safe-area-inset-left) + 16px);
+  background: rgba(90, 78, 72, 0.45);
+  animation: aparecer 0.3s ease both;
+}
+.folha-caixa {
+  width: min(100%, 520px);
+  padding: 22px 20px 18px;
+  background: #fffaf0;
+  border: 5px solid var(--borda);
+  border-radius: 36px;
+  box-shadow: 0 8px 0 rgba(107, 91, 83, 0.25);
+  text-align: center;
+}
+.folha-caixa h2 { margin: 0 0 8px; font-size: clamp(24px, 5vmin, 32px); }
+.folha-texto { margin: 0 0 14px; font-size: clamp(17px, 3.4vmin, 22px); line-height: 1.35; }
+.folha-passos { margin: 0 0 14px; padding: 0 0 0 26px; text-align: left; font-size: clamp(17px, 3.4vmin, 22px); line-height: 1.4; }
+.folha-passos li { margin: 6px 0; }
+.folha-botoes { display: flex; flex-direction: column; gap: 10px; }
+.folha-botao {
+  min-height: var(--alvo-min);
+  padding: 12px 20px;
+  border: 4px solid var(--borda);
+  border-radius: 44px;
+  background: var(--botao);
+  color: var(--tinta);
+  font-size: clamp(22px, 4.4vmin, 28px);
+  font-weight: 700;
+}
+.folha-botao:active { background: var(--botao-ativo); }
+.folha-principal { background: #9ccfb4; box-shadow: 0 6px 0 rgba(107, 91, 83, 0.25); }
+@media (orientation: landscape) and (max-height: 520px) {
+  .folha { align-items: center; }
+  .folha-botoes { flex-direction: row; }
+  .folha-botao { flex: 1 1 0; }
+}

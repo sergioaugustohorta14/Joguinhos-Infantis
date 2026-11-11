@@ -53,6 +53,8 @@ Nenhuma fileira de obstáculos fecha todas as saídas.
 Dentro de cada jogo há dois botões no alto: a **casinha** volta para o menu com todos os jogos, e a **seta** volta para as opções do próprio jogo (no Desviar, a escolha do personagem; no Bolinhas, a escolha do nível; no Basquete, a escolha do modo, embaixo à direita). No Colorir, o botão de quadradinhos do editor volta para a galeria de desenhos. Em tela deitada a seta fica ao lado da casinha.
 
 ## Instalar no Android
+Ao abrir o link no navegador, o app oferece sozinho a instalação (uma vez, e de novo só depois de uns dias se a pessoa disser "Agora não"). O botão com a seta para baixo, no canto de cima à esquerda do menu, abre a mesma oferta quando quiser. No iPhone e em navegadores sem o aviso automático, aparece o passo a passo. Quem já instalou não vê nada disso. Se preferir fazer à mão:
+
 1. Abra o endereço do jogo no Chrome, com internet.
 2. Toque em Colorir e abra um desenho, para o aparelho guardar tudo.
 3. Menu do Chrome (três pontinhos), depois **Adicionar à tela inicial** (ou "Instalar app").
@@ -78,6 +80,7 @@ python -m venv .venv
 .\.venv\Scripts\python.exe tests\test_fase3.py      # Desviar: gestos, fases, obstáculos, vidas, recorde, fim de jogo
 .\.venv\Scripts\python.exe tests\test_bolinhas.py   # Bolinhas: níveis com solução, toque, vitória e derrota
 .\.venv\Scripts\python.exe tests\test_basquete.py   # Basquete: arremesso, chuá, sequências, tempo, estrelas, vestiário
+.\.venv\Scripts\python.exe tests\test_instalar.py    # oferta de instalar o app (Android, iPhone, já instalado)
 ```
 
 Os testes rodam em celular em pé e deitado, tablet Android e PC, e guardam capturas de tela em `tests/capturas/` (pasta não versionada).

@@ -61,6 +61,84 @@
   document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   document.addEventListener('gesturestart', function (e) { e.preventDefault(); });
 
+  // ---------- instalar o app ----------
+  // No Android (Chrome) o navegador avisa quando dá para instalar (beforeinstallprompt); no iPhone/iPad
+  // e em outros navegadores não há esse aviso, então mostramos o passo a passo.
+  var CHAVE_ADIADO = 'joguinhos.instalar.adiado';
+  var ADIAR_DIAS = 7;
+  var eventoInstalar = null;
+  var folhaOferecida = false;
+  var elBtnInstalar = document.getElementById('btn-instalar');
+  var elFolha = document.getElementById('instalar-folha');
+
+  function jaInstalado() {
+    var m = function (q) { return window.matchMedia && window.matchMedia(q).matches; };
+    return m('(display-mode: standalone)') || m('(display-mode: fullscreen)') || m('(display-mode: minimal-ui)') || window.navigator.standalone === true;
+  }
+  function ehIOS() {
+    return /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  }
+  function lerAdiado() { try { return parseInt(localStorage.getItem(CHAVE_ADIADO), 10) || 0; } catch (e) { return 0; } }
+  function gravarAdiado() { try { localStorage.setItem(CHAVE_ADIADO, String(Date.now())); } catch (e) { /* ignora */ } }
+
+  function atualizarBotaoInstalar() { elBtnInstalar.hidden = jaInstalado(); }
+
+  function abrirFolha() {
+    if (jaInstalado()) return;
+    var passos = document.getElementById('instalar-passos');
+    var agora = document.getElementById('instalar-agora');
+    if (eventoInstalar) {
+      passos.hidden = true;
+      agora.hidden = false;
+    } else {
+      // sem o aviso do navegador: ensina o caminho manual
+      passos.innerHTML = ehIOS()
+        ? '<li>Toque no botão <b>Compartilhar</b> (quadrado com uma seta para cima), na barra do Safari.</li><li>Escolha <b>Adicionar à Tela de Início</b>.</li>'
+        : '<li>Abra o menu do navegador (os <b>três pontinhos</b>).</li><li>Toque em <b>Instalar app</b> ou <b>Adicionar à tela inicial</b>.</li>';
+      passos.hidden = false;
+      agora.hidden = true;
+    }
+    document.getElementById('instalar-depois').textContent = eventoInstalar ? 'Agora não' : 'Entendi';
+    elFolha.hidden = false;
+  }
+  function fecharFolha(adiar) {
+    elFolha.hidden = true;
+    if (adiar) gravarAdiado();
+  }
+  // oferece uma vez (e de novo só depois de uns dias), sempre no menu, nunca no meio de um jogo
+  function talvezOferecer() {
+    if (folhaOferecida || jaInstalado() || atual !== 'menu') return;
+    if (Date.now() - lerAdiado() < ADIAR_DIAS * 86400000) return;
+    folhaOferecida = true;
+    abrirFolha();
+  }
+
+  window.addEventListener('beforeinstallprompt', function (ev) {
+    ev.preventDefault();
+    eventoInstalar = ev;
+    atualizarBotaoInstalar();
+    setTimeout(talvezOferecer, 800);
+  });
+  window.addEventListener('appinstalled', function () {
+    eventoInstalar = null;
+    elFolha.hidden = true;
+    elBtnInstalar.hidden = true;
+  });
+  elBtnInstalar.addEventListener('click', function () { Som.liberar(); Som.tocar('toque'); abrirFolha(); });
+  document.getElementById('instalar-agora').addEventListener('click', function () {
+    Som.liberar();
+    var ev = eventoInstalar;
+    if (!ev) { fecharFolha(false); return; }
+    eventoInstalar = null;
+    elFolha.hidden = true;
+    ev.prompt();
+    if (ev.userChoice && ev.userChoice.then) ev.userChoice.then(function (r) { if (!r || r.outcome !== 'accepted') gravarAdiado(); });
+  });
+  document.getElementById('instalar-depois').addEventListener('click', function () { Som.liberar(); fecharFolha(true); });
+  atualizarBotaoInstalar();
+  // navegadores sem o aviso (iPhone, Firefox...): oferece o passo a passo uma vez, logo depois de abrir
+  setTimeout(function () { if (!eventoInstalar) talvezOferecer(); }, 2500);
+
   mostrar(telaDoHash());
 
   // PWA offline

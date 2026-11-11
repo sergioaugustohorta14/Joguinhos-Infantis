@@ -83,6 +83,11 @@ Constantes no começo de `js/desviar.js`: `VEL_INICIAL`, `VEL_MAXIMA`, `VEL_SOBE
 - Em pé fica embaixo da casinha; **deitado fica ao lado dela** e o placar (`.dv-hud`, `.bo-hud`) é deslocado, porque no Desviar a lateral esquerda da tela é zona de toque para jogar (um botão ali faria a criança sair da corrida sem querer). Cada jogo mostra o botão só durante a partida.
 - Vencer um nível antigo no Bolinhas não faz perder o avanço (`gravarNivel(Math.max(...))`).
 
+## Instalar o app (PWA)
+- `js/app.js` guarda o `beforeinstallprompt` (Chrome/Android) e mostra uma folha (`#instalar-folha`) uma vez no menu, 0,8 s depois do aviso; botão `#btn-instalar` (canto de cima à esquerda do menu) abre a mesma folha quando quiser. Sem o aviso (iPhone, Firefox...), a folha mostra o passo a passo, 2,5 s depois de abrir. "Agora não" adia por 7 dias (`joguinhos.instalar.adiado`). Nunca aparece dentro de um jogo.
+- App já instalado: `display-mode` standalone, **fullscreen** (é o do `manifest.webmanifest`), minimal-ui ou `navigator.standalone` escondem tudo.
+- Teste: `tests/test_instalar.py` (simula o aviso com um evento falso e bloqueia o real do Chromium).
+
 ## Pegadinhas conhecidas
 - **Cache do aparelho:** versões antigas do `sw.js` serviam o cache primeiro. Quem já tinha o app precisa recarregar uma ou duas vezes. Hoje o `sw.js` busca a rede primeiro (com `cache: 'no-cache'`, porque o GitHub Pages guarda 10 minutos).
 - **Simulador de toque do Chromium:** depois de um arrasto por CDP (`Input.dispatchTouchEvent`), o primeiro toque seguinte é engolido. Os testes dão um toque descartável no canto (2,2) depois de cada arrasto.

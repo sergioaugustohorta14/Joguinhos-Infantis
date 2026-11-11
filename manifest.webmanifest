@@ -1,7 +1,7 @@
 {
   "name": "Joguinhos",
   "short_name": "Joguinhos",
-  "description": "Colorir e Desviar, jogos calminhos para crianças.",
+  "description": "Colorir, Desviar, Bolinhas e Basquete: jogos para crianças, sem anúncios e sem coleta de dados.",
   "lang": "pt-BR",
   "start_url": "./",
   "scope": "./",
