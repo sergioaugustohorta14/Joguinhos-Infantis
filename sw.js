@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v18';
+var VERSAO = 'joguinhos-v19';
 
 var ARQUIVOS = [
   './',
@@ -36,6 +36,9 @@ var ARQUIVOS = [
 try { importScripts('desenhos/lista.js'); } catch (e) { /* sem lista, só os desenhados em código */ }
 (self.DESENHOS_IMAGENS || []).forEach(function (d) { ARQUIVOS.push(d.arq, d.mini); });
 ARQUIVOS.push('desenhos/lista.js');
+// Doces Estelares (compilado em doces/): a lista é gerada pelo build do doces-match3
+try { importScripts('doces/arquivos.js'); } catch (e) { /* sem o jogo compilado */ }
+if (self.DOCES_ARQUIVOS) { self.DOCES_ARQUIVOS.forEach(function (a) { ARQUIVOS.push(a); }); ARQUIVOS.push('doces/arquivos.js'); }
 
 self.addEventListener('install', function (ev) {
   ev.waitUntil(caches.open(VERSAO).then(function (c) { return c.addAll(ARQUIVOS); }));

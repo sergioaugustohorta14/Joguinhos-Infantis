@@ -1,11 +1,12 @@
 # Joguinhos
 
-Quatro jogos para crianças de 5 e 6 anos, feitos para celular, tablet Android e computador.
+Cinco jogos para crianças, feitos para celular, tablet Android e computador.
 
 - **Colorir**: 560 desenhos de contorno feitos em código (mais os que você importar de imagens, ver `desenhos/LEIA-ME.md`) para pintar, com lápis, pincel, borracha e balde de tinta.
 - **Desviar**: corrida em 3 pistas em que a criança desvia, pula e agacha com o dedo, em 5 fases com cenários diferentes.
 - **Bolinhas**: quebra-cabeça de ordenar bolinhas por cor numa esteira, com níveis que vão ficando mais difíceis.
 - **Basquete**: arremessos contra o relógio, com chuá, sequências, estrelas, desafios do dia, vestiário e conquistas.
+- **Doces**: combinar 3 ou mais doces iguais (estilo match-3), com doces especiais, cascatas e estrelas. Feito em React/TypeScript, numa pasta própria (`doces-match3/`).
 
 Funciona sem internet depois da primeira abertura (PWA). **Não coleta nenhum dado**: sem conta, sem anúncios, sem rastreadores. Só guarda no próprio aparelho o recorde, a preferência de som e a opção de pintar dentro das linhas.
 
@@ -48,6 +49,11 @@ Nenhuma fileira de obstáculos fecha todas as saídas.
 3. Cesta vale 1 ponto; **chuá** (sem encostar no aro) vale 2 e dá mais tempo. 5 cestas seguidas ativam o **Pegando fogo** (pontos x2) e 3 chuás seguidos o **Elétrico** (pontos x3). Errar zera a sequência.
 4. Ao fim, as cestas e os chuás viram **estrelas**, usadas no **Vestiário** (bolas e quadras). Há 3 **desafios do dia**, **conquistas** e a lista dos 5 melhores **recordes** de cada modo.
 5. Tudo fica só no aparelho (sem conta, sem ranking online, sem anúncios).
+
+### Doces
+1. Arraste um doce para o vizinho (ou toque em um e depois no vizinho) para formar 3 ou mais iguais.
+2. 4 em linha vira listrado, T ou L vira embalado, 5 em linha vira bomba colorida (trocada com um doce, apaga todos daquela cor).
+3. São 25 jogadas por partida; a barra mostra as 3 estrelas. A casinha, no alto à esquerda, volta para o menu.
 
 ### Voltar sem sair do jogo
 Dentro de cada jogo há dois botões no alto: a **casinha** volta para o menu com todos os jogos, e a **seta** volta para as opções do próprio jogo (no Desviar, a escolha do personagem; no Bolinhas, a escolha do nível; no Basquete, a escolha do modo, embaixo à direita). No Colorir, o botão de quadradinhos do editor volta para a galeria de desenhos. Em tela deitada a seta fica ao lado da casinha.
@@ -99,6 +105,8 @@ js/colorir.js         galeria e editor de pintura
 js/desviar.js         jogo de corrida
 js/bolinhas.js        jogo de ordenar bolinhas na esteira
 js/basquete.js        jogo de arremessos de basquete
+doces/                Doces já compilado (gerado pelo doces-match3, não edite à mão)
+doces-match3/         código do Doces (React + TypeScript + Tailwind), com README próprio
 js/desenhos/          os 560 desenhos (56 bases + variações)
 icons/                ícone do app
 tools/                servidor local, gerador de ícones, folha de amostras dos desenhos
@@ -117,6 +125,18 @@ Para ver os desenhos a olho: `.\.venv\Scripts\python.exe tools\amostras.py saida
 
 ### Ajustar a dificuldade do Desviar
 No começo de `js/desviar.js` há um bloco com os números: velocidade inicial e máxima, quanto ela sobe por segundo, o tempo entre obstáculos, as vidas e o tempo sem perder vida depois de bater. Logo abaixo ficam as fases (duração, bônus) e o toque (deslize mínimo, toquinho ligado ou desligado). Os temas das fases estão na lista `TEMAS`.
+
+### Mudou algo no Doces?
+O Doces é o único jogo que precisa ser compilado. Depois de mexer em `doces-match3/`:
+
+```powershell
+cd doces-match3
+npm run build      # gera ../doces, atualiza a lista do modo sem internet e sobe a VERSAO do sw.js
+npm test
+..\.venv\Scripts\python.exe tests\test_navegador.py
+```
+
+Depois commite também a pasta `doces/` (é ela que o site publica).
 
 ## Publicar no GitHub Pages
 1. Envie o código para um repositório público (`git push`).

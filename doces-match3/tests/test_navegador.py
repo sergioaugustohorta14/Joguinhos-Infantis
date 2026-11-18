@@ -1,5 +1,6 @@
 """Teste no navegador (Playwright): toque de verdade, animações, especiais e fim de partida.
-Rodar (depois de `npm run build`):  ..\\.venv\\Scripts\\python.exe tests\\test_navegador.py
+Roda o jogo pelo site dos Joguinhos (pasta doces/, gerada pelo `npm run build`).
+Rodar:  ..\\.venv\\Scripts\\python.exe tests\\test_navegador.py
 """
 import socket
 import subprocess
@@ -12,7 +13,6 @@ from playwright.sync_api import sync_playwright
 RAIZ = Path(__file__).resolve().parent.parent
 CAPTURAS = RAIZ / "tests" / "capturas"
 CAPTURAS.mkdir(exist_ok=True)
-NODE = r"C:\Program Files\nodejs\node.exe"
 falhas = []
 
 
@@ -211,14 +211,59 @@ def testar(p, base, nome, toque, **ctx_args):
     nav.close()
 
 
+def integracao(p, site):
+    print("\n== dentro dos Joguinhos ==")
+    nav = p.chromium.launch()
+    ctx = nav.new_context(**p.devices["Pixel 7"])
+    pag = ctx.new_page()
+    erros = []
+    pag.on("pageerror", lambda e: erros.append(str(e)))
+    pag.goto(site)
+    pag.wait_for_load_state("networkidle")
+    pag.evaluate("navigator.serviceWorker.ready.then(() => true)")
+    pag.wait_for_timeout(1500)  # o service worker guarda os arquivos
+    cartao = pag.locator(".cartao-doces")
+    confere(cartao.is_visible(), "o menu tem o cartão Doces")
+    caixa = cartao.bounding_box()
+    confere(caixa["width"] >= 88 and caixa["y"] + caixa["height"] <= pag.viewport_size["height"], "cartão grande e dentro da tela")
+    pag.screenshot(path=str(CAPTURAS / "joguinhos-menu-5-jogos.png"))
+    cartao.tap()
+    pag.wait_for_url("**/doces/**")
+    pag.wait_for_selector("[data-tabuleiro]")
+    pag.wait_for_timeout(600)
+    confere(pag.locator("[data-doce]").count() == 81, "o cartão abre o jogo com o tabuleiro cheio")
+    casinha = pag.locator('a[aria-label="Voltar para o início"]')
+    cb = casinha.bounding_box()
+    hb = pag.locator("header").bounding_box()
+    cobre = cb["x"] < hb["x"] + hb["width"] and cb["x"] + cb["width"] > hb["x"] and cb["y"] < hb["y"] + hb["height"] and cb["y"] + cb["height"] > hb["y"]
+    confere(cb["width"] >= 88 and not cobre, "casinha grande e sem cobrir o placar")
+    pag.screenshot(path=str(CAPTURAS / "joguinhos-doces.png"))
+    casinha.tap()
+    pag.wait_for_timeout(900)
+    confere(pag.locator("#tela-menu").is_visible(), "a casinha volta para o menu dos Joguinhos")
+    # sem internet: o jogo abre do que ficou guardado
+    ctx.set_offline(True)
+    pag.goto(site + "doces/")
+    pag.wait_for_selector("[data-tabuleiro]", timeout=8000)
+    pag.wait_for_timeout(600)
+    confere(pag.locator("[data-doce]").count() == 81, "sem internet, o jogo abre e funciona")
+    confere(pag.evaluate("document.fonts.check('600 20px Fredoka')"), "a fonte vem do próprio site (funciona sem internet)")
+    ctx.set_offline(False)
+    confere(not erros, f"sem erros ({erros[:2]})")
+    nav.close()
+
+
 def main():
     porta = porta_livre()
-    srv = subprocess.Popen([NODE, "node_modules/vite/bin/vite.js", "preview", "--host", "127.0.0.1", "--port", str(porta), "--strictPort"], cwd=RAIZ,
+    # servidor do site dos Joguinhos (a pasta acima desta)
+    srv = subprocess.Popen([sys.executable, str(RAIZ.parent / "tools" / "servir.py"), str(porta)],
                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    time.sleep(2.5)
-    base = f"http://127.0.0.1:{porta}/"
+    time.sleep(1.2)
+    site = f"http://127.0.0.1:{porta}/"
+    base = site + "doces/"
     try:
         with sync_playwright() as p:
+            integracao(p, site)
             testar(p, base, "celular", True, **p.devices["Pixel 7"])
             testar(p, base, "tablet", True, **p.devices["Galaxy Tab S4 landscape"])
             testar(p, base, "pc", False, viewport={"width": 1366, "height": 768})

@@ -16,8 +16,11 @@ const NIVEL: LevelConfig = {
   starScores: [3000, 6000, 10000],
 };
 
-const calcularCasa = (rows: number, cols: number) =>
-  Math.floor(Math.min((window.innerWidth - 44) / cols, (window.innerHeight - 190) / rows, 66));
+// em pé sobra menos altura: a casinha fica em cima do placar
+const calcularCasa = (rows: number, cols: number) => {
+  const reserva = window.innerHeight > window.innerWidth ? 300 : 190;
+  return Math.floor(Math.min((window.innerWidth - 44) / cols, (window.innerHeight - reserva) / rows, 66));
+};
 
 /** Tamanho de cada casa: cabe na tela, deixando espaço para o placar. */
 function useTamanhoCasa(rows: number, cols: number): number {
@@ -54,8 +57,18 @@ export default function App() {
   const estrelas = NIVEL.starScores.filter((m) => pontos >= m).length;
 
   return (
-    <main className="relative flex h-full flex-col items-center justify-center gap-4 overflow-hidden px-2 py-3">
+    <main className="relative flex h-full flex-col items-center justify-center gap-4 overflow-hidden px-2 py-3 portrait:pt-[108px]">
       <div className="estrelas" />
+      {/* casinha: volta para o menu dos Joguinhos */}
+      <a
+        href="../"
+        aria-label="Voltar para o início"
+        className="absolute left-4 top-4 z-20 grid h-[88px] w-[88px] place-items-center rounded-full border-2 border-white/50 bg-[radial-gradient(circle_at_32%_26%,rgba(255,255,255,0.6),rgba(255,255,255,0.14)_62%),rgba(170,120,230,0.3)] shadow-[inset_0_-6px_12px_rgba(60,20,120,0.4),0_6px_14px_rgba(0,0,0,0.35)] active:scale-95"
+      >
+        <svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true">
+          <path d="M8 24 24 9l16 15v15H29V29H19v10H8z" fill="#f4ecff" stroke="#f4ecff" strokeWidth="3" strokeLinejoin="round" />
+        </svg>
+      </a>
       <Header score={pontos} movesLeft={jogadas} starScores={NIVEL.starScores} />
       <Board
         key={partida}

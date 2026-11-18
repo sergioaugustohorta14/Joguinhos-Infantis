@@ -48,7 +48,7 @@ PIXEL = """([x, y]) => { const c = document.getElementById('cv-tinta'); return c
 def main():
     tmp = Path(tempfile.mkdtemp(prefix="joguinhos-teste-"))
     copia = tmp / "app"
-    shutil.copytree(RAIZ, copia, ignore=shutil.ignore_patterns(".venv", ".git", "tests", "desenhos-novos", "__pycache__", ".claude"))
+    shutil.copytree(RAIZ, copia, ignore=shutil.ignore_patterns(".venv", ".git", "tests", "desenhos-novos", "__pycache__", ".claude", "node_modules", "doces-match3"))
     # começa sem nenhum desenho de imagem
     (copia / "desenhos" / "lista.js").write_text("var DESENHOS_IMAGENS = [];\n", encoding="utf-8")
     for cat, nome, fmt in [("bobbie", "carinha.jpg", "JPEG"), ("dinos", "outra carinha.png", "PNG")]:

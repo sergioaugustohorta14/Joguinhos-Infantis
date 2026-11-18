@@ -5,7 +5,7 @@ description: Guia do projeto Joguinhos (PWA com os jogos Colorir e Desviar para 
 
 # Joguinhos: guia do projeto
 
-Projeto **particular** (não é da Sport Labs): quatro jogos (Colorir, Desviar, Bolinhas e Basquete) para crianças de 5 e 6 anos, para celular e tablet Android e PC. Roda no navegador, funciona offline (PWA) e é publicado no GitHub Pages. Repositório pode ser público: **nunca colocar dados pessoais, de crianças ou da clínica no código, nos commits ou nos desenhos.**
+Projeto **particular** (não é da Sport Labs): cinco jogos (Colorir, Desviar, Bolinhas, Basquete e Doces) para crianças de 5 e 6 anos, para celular e tablet Android e PC. Roda no navegador, funciona offline (PWA) e é publicado no GitHub Pages. Repositório pode ser público: **nunca colocar dados pessoais, de crianças ou da clínica no código, nos commits ou nos desenhos.**
 
 ## Regras de trabalho com o dono do projeto
 - Sempre em **português do Brasil**, inclusive comentários, mensagens de commit e textos do jogo.
@@ -87,6 +87,14 @@ Constantes no começo de `js/desviar.js`: `VEL_INICIAL`, `VEL_MAXIMA`, `VEL_SOBE
 - `js/app.js` guarda o `beforeinstallprompt` (Chrome/Android) e mostra uma folha (`#instalar-folha`) uma vez no menu, 0,8 s depois do aviso; botão `#btn-instalar` (canto de cima à esquerda do menu) abre a mesma folha quando quiser. Sem o aviso (iPhone, Firefox...), a folha mostra o passo a passo, 2,5 s depois de abrir. "Agora não" adia por 7 dias (`joguinhos.instalar.adiado`). Nunca aparece dentro de um jogo.
 - App já instalado: `display-mode` standalone, **fullscreen** (é o do `manifest.webmanifest`), minimal-ui ou `navigator.standalone` escondem tudo.
 - Teste: `tests/test_instalar.py` (simula o aviso com um evento falso e bloqueia o real do Chromium).
+
+## Doces (Match-3, React/TypeScript)
+- É o **único jogo com compilação**: código em `doces-match3/` (Vite + React + Tailwind + Motion + Vitest; Node.js instalado em `C:\Program Files\nodejs`), saída em `doces/` (commitada, é o que o site publica). O README do `doces-match3` explica a estrutura.
+- `npm run build` (dentro de `doces-match3`) gera `doces/`, escreve `doces/arquivos.js` (lista para o `sw.js` guardar o jogo e ele funcionar sem internet) e **sobe a VERSAO do `sw.js` sozinho**. Não edite `doces/` à mão.
+- O cartão do menu é um link (`<a class="cartao cartao-doces" href="doces/">`), não um `data-ir`: o Doces é outra página dentro do mesmo app instalado. A casinha do jogo é um link para `../`.
+- A fonte Fredoka vem do pacote `@fontsource/fredoka`, servida pelo próprio site (nada do Google, funciona sem internet).
+- Testes: `npm test` (lógica) e `..\.venv\Scripts\python.exe tests\test_navegador.py` (abre pelo site dos Joguinhos, testa cartão, casinha, sem internet e o jogo inteiro). O `tests/test_imagens.py` ignora `doces-match3` e `node_modules` ao copiar o projeto.
+- Menu com 5 cartões: em pé 2 colunas (o último fica no meio), deitado 5 em linha.
 
 ## Pegadinhas conhecidas
 - **Cache do aparelho:** versões antigas do `sw.js` serviam o cache primeiro. Quem já tinha o app precisa recarregar uma ou duas vezes. Hoje o `sw.js` busca a rede primeiro (com `cache: 'no-cache'`, porque o GitHub Pages guarda 10 minutos).

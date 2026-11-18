@@ -1,6 +1,6 @@
 # Doces Estelares (Match-3)
 
-Jogo de combinar 3 ou mais doces iguais, em React + TypeScript + Tailwind CSS, com animações pelo Motion (o antigo Framer Motion). Fica numa pasta própria dentro dos Joguinhos porque, diferente dos outros jogos (JavaScript puro, sem compilação), este precisa ser compilado.
+Jogo de combinar 3 ou mais doces iguais, em React + TypeScript + Tailwind CSS, com animações pelo Motion (o antigo Framer Motion). É o 5º jogo dos Joguinhos (cartão **Doces** no menu). Fica numa pasta própria porque, diferente dos outros jogos (JavaScript puro, sem compilação), este precisa ser compilado: o código fica aqui e a versão compilada vai para `../doces/`, que é o que o site publica.
 
 Nome, doces e frases são próprios: o jogo é inspirado no gênero, sem usar marca, personagens ou textos de nenhum jogo existente.
 
@@ -29,10 +29,10 @@ cd "D:\Jogos Infantis para Filhos\doces-match3"
 npm install          # só na primeira vez
 npm run dev          # abre em http://localhost:5173 (atualiza sozinho ao salvar)
 npm test             # testes da lógica (Vitest)
-npm run build        # gera a versão final em dist/
+npm run build        # gera ../doces (o que o site publica), a lista do modo sem internet e sobe a VERSAO do ../sw.js
 ```
 
-Teste no navegador (toque de verdade, animações, especiais e fim de partida), depois do `npm run build`:
+Teste no navegador (abre pelo site dos Joguinhos: cartão do menu, casinha, sem internet, toque de verdade, animações, especiais e fim de partida), depois do `npm run build`:
 
 ```powershell
 ..\.venv\Scripts\python.exe tests\test_navegador.py
@@ -55,6 +55,7 @@ src/
     effects.ts            um passo da cascata: limpa, cria especiais, dispara efeitos em cadeia
     gravity.ts            queda, reposição pelo topo, embaralhar
   types/game.ts           Candy, Position, Grid, BoardState, LevelConfig, MatchGroup
+scripts/pos-build.mjs     depois do build: lista os arquivos para o modo sem internet e sobe a versão do sw.js
 tests/test_navegador.py   teste no navegador (Playwright)
 ```
 
