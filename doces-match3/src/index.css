@@ -64,6 +64,29 @@ body {
   text-shadow: 0 4px 0 rgba(40, 0, 70, 0.55);
 }
 
+/* animações dos doces em CSS puro (rodam fora do JavaScript, sem pesar o toque) */
+.particula {
+  animation: particula 0.6s ease-out forwards;
+  will-change: transform, opacity;
+}
+@keyframes particula {
+  from { transform: translate(0, 0) scale(1); opacity: 1; }
+  to { transform: translate(var(--dx), var(--dy)) scale(0.3); opacity: 0; }
+}
+.doce-selecao { animation: selecao-entra 0.16s ease-out; }
+@keyframes selecao-entra {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.doce-pulsar { animation: pulsar 0.8s ease-in-out infinite; }
+@keyframes pulsar {
+  50% { transform: scale(1.1); }
+}
+.doce-armado { animation: armado 0.8s ease-in-out infinite; }
+@keyframes armado {
+  50% { transform: scale(1.12); filter: brightness(1.5); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .estrelas, .estrelas::before { animation: none; }
 }

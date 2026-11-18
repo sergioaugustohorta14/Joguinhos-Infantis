@@ -1,5 +1,5 @@
 // Placar do alto: jogadas restantes, pontos e a barra de estrelas.
-import { motion } from 'motion/react';
+import { m } from 'motion/react';
 
 interface HeaderProps {
   score: number;
@@ -28,7 +28,7 @@ export function Header({ score, movesLeft, starScores }: HeaderProps) {
     <header className="flex w-full max-w-[640px] items-stretch gap-3 px-3">
       <div className="flex min-w-[92px] flex-col items-center justify-center rounded-3xl border border-white/25 bg-gradient-to-b from-fuchsia-500/80 to-purple-700/80 px-3 py-2 shadow-[0_6px_0_rgba(40,0,70,0.6),inset_0_2px_0_rgba(255,255,255,0.35)]">
         <span className="text-xs font-semibold uppercase tracking-wider text-white/85">Jogadas</span>
-        <motion.span
+        <m.span
           key={movesLeft}
           className="texto-contorno text-4xl font-bold leading-none"
           initial={{ scale: 1.4 }}
@@ -36,13 +36,13 @@ export function Header({ score, movesLeft, starScores }: HeaderProps) {
           transition={{ type: 'spring', visualDuration: 0.3, bounce: 0.5 }}
         >
           {movesLeft}
-        </motion.span>
+        </m.span>
       </div>
 
-      <div className="flex flex-1 flex-col justify-center gap-1.5 rounded-3xl border border-white/20 bg-white/12 px-4 py-2 shadow-[0_10px_24px_rgba(10,0,30,0.45),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-md">
+      <div className="flex flex-1 flex-col justify-center gap-1.5 rounded-3xl border border-white/20 bg-[rgba(110,60,160,0.4)] px-4 py-2 shadow-[0_10px_24px_rgba(10,0,30,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]">
         <div className="flex items-baseline justify-between">
           <span className="text-xs font-semibold uppercase tracking-wider text-white/75">Pontos</span>
-          <motion.span
+          <m.span
             key={score}
             className="texto-contorno text-3xl font-bold leading-none text-amber-100"
             initial={{ scale: 1.15 }}
@@ -50,13 +50,15 @@ export function Header({ score, movesLeft, starScores }: HeaderProps) {
             transition={{ duration: 0.25 }}
           >
             {score.toLocaleString('pt-BR')}
-          </motion.span>
+          </m.span>
         </div>
         {/* barra de estrelas: as marcas ficam na proporção de cada meta */}
         <div className="relative mt-2 h-3.5 rounded-full bg-black/35 shadow-[inset_0_2px_3px_rgba(0,0,0,0.5)]">
-          <motion.div
+          {/* a barra cresce por recorte (clip-path): só repinta, não recalcula a página */}
+          <m.div
             className="h-full rounded-full bg-gradient-to-r from-amber-300 via-yellow-300 to-pink-400 shadow-[0_0_10px_rgba(255,220,120,0.7)]"
-            animate={{ width: `${progresso * 100}%` }}
+            initial={false}
+            animate={{ clipPath: `inset(0 ${(1 - progresso) * 100}% 0 0 round 999px)` }}
             transition={{ type: 'spring', visualDuration: 0.5, bounce: 0.15 }}
           />
           {starScores.map((meta, i) => (

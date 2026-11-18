@@ -64,3 +64,11 @@ tests/test_navegador.py   teste no navegador (Playwright)
 - Velocidade e quique da queda: `transicaoY` em `Tile.tsx`.
 - Pontos: dentro de `cascata` em `Board.tsx` (20 por doce, bônus por especial, vezes o nível da cascata).
 - Nível (tamanho, jogadas, metas das estrelas): `NIVEL` em `App.tsx`.
+
+## Leveza no celular (não desfazer sem medir)
+Em 18/11/2026 o toque tinha um atraso perceptível. Medido com o processador 6x mais lento (perto de um celular simples): o doce levava 120 a 240 ms para começar a andar e 27% dos quadros saíam lentos; depois dos ajustes, 50 a 93 ms e 5%. O que fez diferença:
+- `LazyMotion` com `domAnimation` (em `main.tsx`) e `m.div` no lugar de `motion.div`: sem o sistema de layout do Motion, que media todos os doces a cada mudança. Por isso nada de `layout`/`layoutId` (o `strict` acusa se alguém usar `motion.`).
+- Sem `AnimatePresence` nos 81 doces: ele fazia todos se redesenharem a cada mudança. Quem sai do tabuleiro vai para a camada de estouro (`Estouro` em `Tile.tsx`, ligada pelo `setGrid` do `Board.tsx`).
+- Casas e doces dentro de `useMemo`, e `Board` com `memo`: o placar mudar não redesenha o tabuleiro.
+- Partículas, seleção e pulsos em CSS puro (`index.css`), fora do JavaScript.
+- Cada doce com `will-change: transform` (andar não repinta a sombra do desenho); o filtro de brilho só no doce armado; sem `backdrop-blur` no tabuleiro e no placar (as estrelas piscando atrás obrigavam a refazer o desfoque o tempo todo); barra de estrelas por `clip-path`, não por `width`.

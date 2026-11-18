@@ -7,7 +7,7 @@ var DOCES_ARQUIVOS = [
  "doces/assets/fredoka-latin-600-normal-CcrEjrB4.woff",
  "doces/assets/fredoka-latin-700-normal-BOIZVyIN.woff2",
  "doces/assets/fredoka-latin-700-normal-C8FeHd3X.woff",
- "doces/assets/index-Bg56HoDz.js",
- "doces/assets/index-JKPj_kyr.css",
+ "doces/assets/index-BVbveHUa.css",
+ "doces/assets/index-CCBJgEUN.js",
  "doces/index.html"
 ];

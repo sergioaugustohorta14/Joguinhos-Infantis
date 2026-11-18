@@ -1,7 +1,7 @@
 // Estado geral da partida: pontos, jogadas e o fim do nível.
 // (Mapa de fases, vidas, barra de ajudas e as telas completas de vitória/derrota entram nas próximas etapas.)
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'motion/react';
+import { AnimatePresence, m } from 'motion/react';
 import type { LevelConfig } from './types/game';
 import { ALL_COLORS } from './types/game';
 import { Board, type ScoreEvent } from './components/Board';
@@ -83,13 +83,13 @@ export default function App() {
 
       <AnimatePresence>
         {fim && (
-          <motion.div
+          <m.div
             className="absolute inset-0 z-10 flex items-center justify-center bg-[#12061f]/60 p-6 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
-            <motion.div
+            <m.div
               className="flex w-full max-w-sm flex-col items-center gap-3 rounded-[32px] border border-white/25 bg-white/15 px-6 py-7 text-center shadow-[0_20px_50px_rgba(0,0,0,0.5)] backdrop-blur-md"
               initial={{ scale: 0.6, y: 30 }}
               animate={{ scale: 1, y: 0 }}
@@ -106,8 +106,8 @@ export default function App() {
               >
                 Jogar de novo
               </button>
-            </motion.div>
-          </motion.div>
+            </m.div>
+          </m.div>
         )}
       </AnimatePresence>
     </main>

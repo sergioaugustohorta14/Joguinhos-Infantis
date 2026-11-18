@@ -1,6 +1,6 @@
 /* Service worker: guarda tudo no aparelho para funcionar sem internet.
    Ao mudar qualquer arquivo do app, aumente a VERSAO para os aparelhos atualizarem. */
-var VERSAO = 'joguinhos-v19';
+var VERSAO = 'joguinhos-v20';
 
 var ARQUIVOS = [
   './',

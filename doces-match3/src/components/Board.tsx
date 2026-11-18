@@ -1,17 +1,20 @@
 // Tabuleiro: desenha a grade e os doces, recebe o toque (arrastar ou tocar em dois vizinhos)
 // e conduz a sequência troca → limpeza → queda → reposição → cascata, esperando cada animação.
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useAnimate } from 'motion/react';
-import type { Grid, LevelConfig, Position } from '../types/game';
+// Leveza: as casas e os doces só são redesenhados quando o tabuleiro muda (useMemo), o placar
+// mudar não redesenha o tabuleiro (memo), os doces que saem vão para uma camada própria de
+// estouro e as partículas são CSS puro (não passam pelo JavaScript a cada quadro).
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, m, useAnimate } from 'motion/react';
+import type { Candy, Grid, LevelConfig, Position } from '../types/game';
 import { createBoard, seeded, type Rng } from '../logic/boardGenerator';
 import { findMatches, hasPossibleMove, inBounds, isAdjacent, swapCells } from '../logic/matchDetector';
 import { applyGravity, refill, shuffleBoard } from '../logic/gravity';
 import { colorBombSwap, resolveStep, type StepOptions, type StepResult } from '../logic/effects';
-import { Tile } from './Tile';
+import { Estouro, Tile } from './Tile';
 import { CandyDefs, corDaParticula } from './Candy';
 
 // tempos de espera entre as etapas (ms); as animações dos doces foram feitas para caber neles
-const T_TROCA = 200;
+const T_TROCA = 170;
 const T_VOLTA = 240;
 const T_LIMPAR = 270;
 const T_QUEDA_BASE = 300;
@@ -39,6 +42,7 @@ interface BoardProps {
 
 interface Particula { id: number; x: number; y: number; cor: string; ang: number; dist: number; tam: number }
 interface Texto { id: number; texto: string; x: number; y: number; grande: boolean }
+interface Saindo { id: number; doce: Candy; r: number; c: number }
 
 declare global {
   interface Window {
@@ -48,11 +52,25 @@ declare global {
 
 let proximoEfeito = 1;
 
-export function Board({ level, size, disabled = false, seed, onScore, onMoveUsed, onIdle }: BoardProps) {
+export const Board = memo(function Board({ level, size, disabled = false, seed, onScore, onMoveUsed, onIdle }: BoardProps) {
   const rng: Rng = useMemo(() => (seed !== undefined ? seeded(seed) : Math.random), [seed]);
   const [grid, setGridState] = useState<Grid>(() => createBoard(level.rows, level.cols, level.colors, rng));
   const gridRef = useRef(grid);
-  const setGrid = useCallback((g: Grid) => { gridRef.current = g; setGridState(g); }, []);
+  const [saindo, setSaindo] = useState<Saindo[]>([]);
+  // troca a grade; os doces que sumiram dela ganham a animação de estouro na camada própria
+  const setGrid = useCallback((g: Grid) => {
+    const ficam = new Set<number>();
+    for (const linha of g) for (const d of linha) if (d) ficam.add(d.id);
+    const sairam: Saindo[] = [];
+    gridRef.current.forEach((linha, r) => linha.forEach((d, c) => { if (d && !ficam.has(d.id)) sairam.push({ id: d.id, doce: d, r, c }); }));
+    gridRef.current = g;
+    setGridState(g);
+    if (sairam.length) {
+      setSaindo((s) => [...s, ...sairam]);
+      const ids = new Set(sairam.map((x) => x.id));
+      setTimeout(() => setSaindo((s) => s.filter((x) => !ids.has(x.id))), 320);
+    }
+  }, []);
   const [nascimento, setNascimento] = useState<Map<number, number>>(new Map());
   const [selecionado, setSelecionado] = useState<Position | null>(null);
   const [particulas, setParticulas] = useState<Particula[]>([]);
@@ -204,12 +222,45 @@ export function Board({ level, size, disabled = false, seed, onScore, onMoveUsed
     else setSelecionado(a.pos);
   };
 
-  const pecas = grid.flatMap((linha, r) => linha.map((doce, c) => (doce ? { doce, r, c } : null))).filter((x) => x !== null);
+  // casas do tabuleiro, em xadrez bem suave (só redesenha se o tamanho mudar)
+  const casas = useMemo(() => (
+    <div className="absolute inset-0 overflow-hidden rounded-2xl">
+      {Array.from({ length: level.rows * level.cols }, (_, i) => {
+        const r = Math.floor(i / level.cols);
+        const c = i % level.cols;
+        return (
+          <div
+            key={i}
+            className={(r + c) % 2 ? 'absolute bg-indigo-950/45' : 'absolute bg-indigo-900/35'}
+            style={{ left: c * size, top: r * size, width: size, height: size }}
+          />
+        );
+      })}
+    </div>
+  ), [level.rows, level.cols, size]);
+
+  // doces (o recorte esconde os que estão nascendo acima do tabuleiro); só redesenha quando o tabuleiro muda
+  const doces = useMemo(() => (
+    <div className="absolute inset-0 overflow-hidden rounded-2xl">
+      {grid.flatMap((linha, r) => linha.map((doce, c) => doce && (
+        <Tile
+          key={doce.id}
+          candy={doce}
+          row={r}
+          col={c}
+          size={size}
+          selected={!!selecionado && selecionado.row === r && selecionado.col === c}
+          spawnFromRow={nascimento.get(doce.id)}
+        />
+      )))}
+      {saindo.map((s) => <Estouro key={`s${s.id}`} candy={s.doce} row={s.r} col={s.c} size={size} />)}
+    </div>
+  ), [grid, nascimento, saindo, selecionado, size]);
 
   return (
     <div
       ref={escopo}
-      className="relative rounded-[28px] border border-white/20 bg-white/10 p-2.5 shadow-[0_18px_40px_rgba(10,0,30,0.55),inset_0_1px_0_rgba(255,255,255,0.25)] backdrop-blur-md"
+      className="relative rounded-[28px] border border-white/20 bg-[rgba(110,60,160,0.42)] p-2.5 shadow-[0_18px_40px_rgba(10,0,30,0.55),inset_0_1px_0_rgba(255,255,255,0.25)]"
     >
       <CandyDefs />
       <div
@@ -221,48 +272,19 @@ export function Board({ level, size, disabled = false, seed, onScore, onMoveUsed
         onPointerCancel={aoSoltar}
         data-tabuleiro
       >
-        {/* casas do tabuleiro, em xadrez bem suave */}
-        <div className="absolute inset-0 overflow-hidden rounded-2xl">
-          {Array.from({ length: level.rows * level.cols }, (_, i) => {
-            const r = Math.floor(i / level.cols);
-            const c = i % level.cols;
-            return (
-              <div
-                key={i}
-                className={(r + c) % 2 ? 'absolute bg-indigo-950/45' : 'absolute bg-indigo-900/35'}
-                style={{ left: c * size, top: r * size, width: size, height: size }}
-              />
-            );
-          })}
-        </div>
-
-        {/* doces (o recorte esconde os que estão nascendo acima do tabuleiro) */}
-        <div className="absolute inset-0 overflow-hidden rounded-2xl">
-          <AnimatePresence>
-            {pecas.map(({ doce, r, c }) => (
-              <Tile
-                key={doce.id}
-                candy={doce}
-                row={r}
-                col={c}
-                size={size}
-                selected={!!selecionado && selecionado.row === r && selecionado.col === c}
-                spawnFromRow={nascimento.get(doce.id)}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
+        {casas}
+        {doces}
 
         {/* partículas dos doces que estouraram */}
         <div className="pointer-events-none absolute inset-0">
           {particulas.map((p) => (
-            <motion.div
+            <div
               key={p.id}
-              className="absolute rounded-full"
-              style={{ left: p.x - p.tam / 2, top: p.y - p.tam / 2, width: p.tam, height: p.tam, background: p.cor, boxShadow: `0 0 8px ${p.cor}` }}
-              initial={{ x: 0, y: 0, opacity: 1, scale: 1 }}
-              animate={{ x: Math.cos(p.ang) * p.dist, y: Math.sin(p.ang) * p.dist + size * 0.25, opacity: 0, scale: 0.3 }}
-              transition={{ duration: 0.6, ease: 'easeOut' }}
+              className="particula absolute rounded-full"
+              style={{
+                left: p.x - p.tam / 2, top: p.y - p.tam / 2, width: p.tam, height: p.tam, background: p.cor, boxShadow: `0 0 8px ${p.cor}`,
+                '--dx': `${Math.cos(p.ang) * p.dist}px`, '--dy': `${Math.sin(p.ang) * p.dist + size * 0.25}px`,
+              } as React.CSSProperties}
             />
           ))}
         </div>
@@ -271,7 +293,7 @@ export function Board({ level, size, disabled = false, seed, onScore, onMoveUsed
         <div className="pointer-events-none absolute inset-0">
           <AnimatePresence>
             {textos.map((t) => (
-              <motion.div
+              <m.div
                 key={t.id}
                 className={`texto-contorno absolute whitespace-nowrap font-bold ${t.grande ? 'text-amber-200' : 'text-white'}`}
                 style={{ left: t.x, top: t.y, fontSize: t.grande ? Math.max(30, size * 0.8) : Math.max(18, size * 0.42) }}
@@ -281,11 +303,11 @@ export function Board({ level, size, disabled = false, seed, onScore, onMoveUsed
                 transition={{ type: 'spring', visualDuration: 0.35, bounce: 0.5 }}
               >
                 {t.texto}
-              </motion.div>
+              </m.div>
             ))}
           </AnimatePresence>
         </div>
       </div>
     </div>
   );
-}
+});

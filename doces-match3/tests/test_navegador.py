@@ -215,6 +215,8 @@ def integracao(p, site):
     print("\n== dentro dos Joguinhos ==")
     nav = p.chromium.launch()
     ctx = nav.new_context(**p.devices["Pixel 7"])
+    # a oferta de instalação abre 2,5 s depois do menu e cobriria o cartão: começa como "Agora não"
+    ctx.add_init_script("try { localStorage.setItem('joguinhos.instalar.adiado', String(Date.now())); } catch (e) {}")
     pag = ctx.new_page()
     erros = []
     pag.on("pageerror", lambda e: erros.append(str(e)))
